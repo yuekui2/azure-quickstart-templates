@@ -48,8 +48,8 @@ help()
 log()
 {
 	# If you want to enable this logging add a un-comment the line below and add your account key 
-    	#curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/[account-key]/tag/redis-extension,${HOSTNAME}
-	echo "$1"
+    	curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
+		echo "$1"
 }
 
 log "Begin execution of kafka script extension on ${HOSTNAME}"
@@ -162,6 +162,7 @@ expand_ip_range() {
 # Install Zookeeper - can expose zookeeper version
 install_zookeeper()
 {
+	log "log : install_zookeeper"
 	mkdir -p /var/lib/zookeeper
 	cd /var/lib/zookeeper
 	wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.11/zookeeper-3.4.11.tar.gz"
@@ -206,6 +207,7 @@ setup_datadisks() {
 # Install kafka
 install_kafka()
 {
+	log "kafkalog : install_kafka"
 	cd /usr/local
 	name=kafka
 	version=${KF_VERSION}
@@ -225,17 +227,22 @@ install_kafka()
 	cd kafka
 	#_ MAIN _#
 	if [[ ! -f "${src_package}" ]]; then
+	  log "kafkalog : printing download url for kafka..."	
+	  log ${download_url}
 	  wget ${download_url}
 	fi
 	tar zxf ${src_package}
 	cd kafka_${kafkaversion}-${version}
+	log "kafkalog : change config"
 	
 	sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties 
 	sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties 
 	sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties 
+	log "kafkalog : run kafka"
 
 	chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
 	/usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
+	log "kafkalog : end of install_kafka"
 }
 
 # Primary Install Tasks
