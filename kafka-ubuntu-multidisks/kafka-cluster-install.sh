@@ -123,12 +123,13 @@ done
 # Install Oracle Java
 install_java()
 {
-    log "Installing Java"
-    add-apt-repository -y ppa:webupd8team/java
+    log "Installing Java kui"
+    #add-apt-repository -y ppa:webupd8team/java
     apt-get -y update 
-    echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-    apt-get -y install oracle-java7-installer
+    #echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+    #echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+    #apt-get -y install oracle-java7-installer
+	apt-get -y install default-jre
 }
 
 # Expand a list of successive IP range defined by a starting address prefix (e.g. 10.0.0.1) and the number of machines in the range
@@ -138,7 +139,7 @@ expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
-        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg       
+        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.11/conf/zoo.cfg       
     done
 }
 
@@ -163,22 +164,22 @@ install_zookeeper()
 {
 	mkdir -p /var/lib/zookeeper
 	cd /var/lib/zookeeper
-	wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz"
-	tar -xvf "zookeeper-3.4.6.tar.gz"
+	wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.11/zookeeper-3.4.11.tar.gz"
+	tar -xvf "zookeeper-3.4.11.tar.gz"
 
-	touch zookeeper-3.4.6/conf/zoo.cfg
+	touch zookeeper-3.4.11/conf/zoo.cfg
 
-	echo "tickTime=2000" >> zookeeper-3.4.6/conf/zoo.cfg
-	echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.6/conf/zoo.cfg
-	echo "clientPort=2181" >> zookeeper-3.4.6/conf/zoo.cfg
-	echo "initLimit=5" >> zookeeper-3.4.6/conf/zoo.cfg
-	echo "syncLimit=2" >> zookeeper-3.4.6/conf/zoo.cfg
-	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg
+	echo "tickTime=2000" >> zookeeper-3.4.11/conf/zoo.cfg
+	echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.11/conf/zoo.cfg
+	echo "clientPort=2181" >> zookeeper-3.4.11/conf/zoo.cfg
+	echo "initLimit=5" >> zookeeper-3.4.11/conf/zoo.cfg
+	echo "syncLimit=2" >> zookeeper-3.4.11/conf/zoo.cfg
+	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.11/conf/zoo.cfg
 	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
 
 	echo $(($1+1)) >> /var/lib/zookeeper/myid
 
-	zookeeper-3.4.6/bin/zkServer.sh start
+	zookeeper-3.4.11/bin/zkServer.sh start
 }
 
 # Setup datadisks
