@@ -280,6 +280,9 @@
           "subnet": {
             "value": "[variables('networkSettings').subnets.data]"
           },
+          "dnsName": {
+            "value": "[parameters('domainName')]"
+          },
           "commonSettings": {
             "value": {
               "adminUsername": "[parameters('adminUsername')]",

@@ -19,6 +19,9 @@
     },
     "subnet": {
       "type": "object"
+    },
+    "dnsName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -26,6 +29,7 @@
     "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('subnet').vnet), '/subnets/', parameters('subnet').name)]",
     "storageAccountName": "[concat(parameters('storageSettings').name, variables('namespace'))]",
     "vmName": "[concat(variables('namespace'), 'vm')]",
+    "publicIpName": "[concat(parameters('commonSettings').namespace, 'BrokerPublicIp', copyIndex())]",
     "nicName": "[concat(variables('namespace'), 'nic')]",
     "adminUsername": "[parameters('commonSettings').adminUsername]",
     "vmCount": "[parameters('machineSettingsbroker').vmCount]",
@@ -36,9 +40,24 @@
   "resources": [
     {
       "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIpName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('dnsName'), 'Broker', copyIndex())]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicName'), copyindex())]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIpName'))]"
+      ],
       "copy": {
         "name": "nicCopyLoop",
         "count": "[variables('vmCount')]"
@@ -50,6 +69,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('addprefix'), copyindex())]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -138,9 +160,9 @@
       },
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
-		"type": "CustomScript",
-		"typeHandlerVersion": "2.0",
-		"autoUpgradeMinorVersion": true,
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": "[parameters('osSettings').scripts]",
           "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', variables('zCount'),' -i ', variables('zSubnet'))]"
