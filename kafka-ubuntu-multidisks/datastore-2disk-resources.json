@@ -50,7 +50,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsName'), 'Broker', copyIndex())]"
+          "domainNameLabel": "[concat(parameters('dnsName'), 'broker', copyIndex())]"
         }
       }
     },
