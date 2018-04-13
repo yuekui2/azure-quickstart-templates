@@ -19,6 +19,9 @@
     },
     "subnet": {
       "type": "object"
+    },
+    "dnsName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -26,6 +29,7 @@
     "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('subnet').vnet), '/subnets/', parameters('subnet').name)]",
     "storageAccountName": "[concat(parameters('storageSettings').name, variables('namespace'))]",
     "vmName": "[concat(variables('namespace'), 'vm')]",
+    "publicIpName": "[concat(parameters('commonSettings').namespace, 'ZookeeperPublicIp')]",
     "nicName": "[concat(variables('namespace'), 'nic')]",
     "adminUsername": "[parameters('commonSettings').adminUsername]",
     "vmCount": "[parameters('machineSettings').vmCount]",
@@ -34,8 +38,27 @@
   "resources": [
     {
       "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('publicIpName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "ipCopyLoop",
+        "count": "[variables('vmCount')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('dnsName'), 'zookeeper', copyIndex())]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicName'), copyindex())]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIpName'), copyIndex())]"
+      ],
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "nicCopyLoop",
@@ -48,6 +71,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('addprefix'), copyindex())]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIpName'), copyIndex()))]"
+              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }

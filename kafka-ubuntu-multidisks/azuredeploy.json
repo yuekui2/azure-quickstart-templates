@@ -236,6 +236,9 @@
           "subnet": {
             "value": "[variables('networkSettings').subnets.zookeeper]"
           },
+          "dnsName": {
+            "value": "[parameters('domainName')]"
+          },
           "commonSettings": {
             "value": {
               "adminUsername": "[parameters('adminUsername')]",
