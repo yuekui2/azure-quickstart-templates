@@ -74,7 +74,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('addprefix'), copyindex())]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'), copyIndex())]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIpName'), copyIndex()))]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
