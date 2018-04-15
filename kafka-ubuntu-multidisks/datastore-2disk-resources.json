@@ -48,7 +48,7 @@
         "count": "[variables('vmCount')]"
       },
       "properties": {
-        "publicIPAllocationMethod": "Dynamic",
+        "publicIPAllocationMethod": "Static",
         "dnsSettings": {
           "domainNameLabel": "[concat(parameters('dnsName'), 'broker', copyIndex())]"
         }
