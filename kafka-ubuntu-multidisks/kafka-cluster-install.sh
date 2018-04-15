@@ -111,8 +111,8 @@ while getopts :n:k:b:z:i:c:p:h optname; do
       ZOOKEEPER_IP_PREFIX=${OPTARG}
       ;;
     c) # Number of instances
-	INSTANCE_COUNT=${OPTARG}
-	;;
+      INSTANCE_COUNT=${OPTARG}
+      ;;
     h)  #show help
       help
       exit 2
@@ -213,6 +213,7 @@ setup_datadisks() {
 install_kafka()
 {
 	log "kafkalog : install_kafka"
+	log "kafkalog : advertised = ${KAFKA_ADVERTISED}"
 	cd /usr/local
 	name=kafka
 	version=${KF_VERSION}
