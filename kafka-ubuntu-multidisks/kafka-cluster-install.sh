@@ -43,13 +43,14 @@ help()
     echo "-h view this help content"
     echo "-z zookeeper not kafka"
     echo "-i zookeeper Private IP address prefix"
+    echo "-n kafka advertised host name"
 }
 
 log()
 {
-	# If you want to enable this logging add a un-comment the line below and add your account key 
-    	curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
-		echo "$1"
+    # If you want to enable this logging add a un-comment the line below and add your account key 
+    curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
+    echo "$1"
 }
 
 log "Begin execution of kafka script extension on ${HOSTNAME}"
@@ -88,11 +89,15 @@ ZOOKEEPER_PORT="2181"
 KAFKADIR="/var/lib/kafkadir"
 # sed command issues need escape character \
 KAFKADIRSED="\/var\/lib\/kafkadir"
+KAFKA_ADVERTISED=""
 
 #Loop through options passed
-while getopts :k:b:z:i:c:p:h optname; do
+while getopts :n:k:b:z:i:c:p:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
+    n) # kafka advertised host name
+      KAFKA_ADVERTISED=${OPTARG}
+      ;;
     k)  #kafka version
       KF_VERSION=${OPTARG}
       ;;
@@ -238,6 +243,8 @@ install_kafka()
 	sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties 
 	sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties 
 	sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties 
+	sed -r -i "s/(advertised.host.name)=(.*)/\1=${KAFKA_ADVERTISED}/g" config/server.properties 
+
 	log "kafkalog : run kafka"
 
 	chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
