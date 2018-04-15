@@ -244,7 +244,7 @@ install_kafka()
 	sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties 
 	sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties 
 	sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties 
-	sed -r -i "s/(advertised.host.name)=(.*)/\1=${KAFKA_ADVERTISED}/g" config/server.properties 
+	echo "advertised.host.name=${KAFKA_ADVERTISED}" >> config/server.properties 
 
 	log "kafkalog : run kafka"
 
