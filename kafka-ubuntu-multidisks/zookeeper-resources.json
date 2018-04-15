@@ -126,9 +126,23 @@
           "inputEndpoints": [
             {
               "enableDirectServerReturn": "False",
-              "endpointName": "[concat('zkPort', copyindex())]",
+              "endpointName": "[concat('zkPorta', copyindex())]",
               "privatePort": 2181,
               "publicPort": 2181,
+              "protocol": "tcp"
+            },
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName": "[concat('zkPortb', copyindex())]",
+              "privatePort": 2888,
+              "publicPort": 2888,
+              "protocol": "tcp"
+            },
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName": "[concat('zkPortc', copyindex())]",
+              "privatePort": 3888,
+              "publicPort": 3888,
               "protocol": "tcp"
             }
           ]
