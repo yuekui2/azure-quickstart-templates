@@ -146,6 +146,15 @@
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()) )]"
             }
+          ],
+          "inputEndpoints": [
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName":  "[concat('brokerPort', copyindex())]",
+              "privatePort": 9092,
+              "publicPort": 9092,
+              "protocol": "tcp"
+            }
           ]
         }
       }

@@ -122,6 +122,15 @@
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()) )]"
             }
+          ],
+          "inputEndpoints": [
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName": "[concat('zkPort', copyindex())]",
+              "privatePort": 2181,
+              "publicPort": 2181,
+              "protocol": "tcp"
+            }
           ]
         }
       }
