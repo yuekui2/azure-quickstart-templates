@@ -41,7 +41,7 @@ help()
     echo "-k kafka version like 0.8.2.1"
     echo "-b broker id"
     echo "-h view this help content"
-    echo "-z zookeeper ID, 0 means installing kafka, >= 1 means installing zookeeper of the given ID"
+    echo "-z zookeeper not kafka"
     echo "-i zookeeper Private IP address prefix"
     echo "-n kafka advertised host name"
 }
@@ -81,7 +81,7 @@ fi
 #Script Parameters
 KF_VERSION="0.9.0.0"
 BROKER_ID=0
-ZOOKEEPER_ID=0
+ZOOKEEPER1KAFKA0="0"
 
 ZOOKEEPER_IP_PREFIX="10.0.1.10"
 INSTANCE_COUNT=1
@@ -105,7 +105,7 @@ while getopts :n:k:b:z:i:c:p:h optname; do
       BROKER_ID=${OPTARG}
       ;;
     z)  #zookeeper not kafka
-      ZOOKEEPER_ID=${OPTARG}
+      ZOOKEEPER1KAFKA0=${OPTARG}
       ;;
     i)  #zookeeper Private IP address prefix
       ZOOKEEPER_IP_PREFIX=${OPTARG}
@@ -183,8 +183,7 @@ install_zookeeper()
 	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.11/conf/zoo.cfg
 	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
 
-	#echo $(($1+1)) >> /var/lib/zookeeper/myid
-	echo ${ZOOKEEPER_ID} >> /var/lib/zookeeper/myid
+	echo $(($1+1)) >> /var/lib/zookeeper/myid
 
 	zookeeper-3.4.11/bin/zkServer.sh start
 }
@@ -263,16 +262,13 @@ install_kafka()
 #------------------------
 install_java
 
-#if [ ${ZOOKEEPER1KAFKA0} -eq "1" ];
-if ((${ZOOKEEPER_ID} > 0));
+if [ ${ZOOKEEPER1KAFKA0} -eq "1" ];
 then
-	log "ZOOKEEPER_ID is ${ZOOKEEPER_ID}, install zookeeper"
 	#
 	#Install zookeeper
 	#-----------------------
 	install_zookeeper
 else
-	log "ZOOKEEPER_ID is ${ZOOKEEPER_ID}, install kafka"
 	#
 	#Install kafka
 	#-----------------------
