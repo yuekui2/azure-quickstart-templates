@@ -233,12 +233,12 @@
       },
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
-		"type": "CustomScript",
-		"typeHandlerVersion": "2.0",
-		"autoUpgradeMinorVersion": true,
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": "[parameters('osSettings').scripts]",
-          "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', variables('zCount'),' -i ', variables('zSubnet'))]"
+          "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', variables('zCount'),' -i ', variables('zSubnet'), ' -n ', reference(concat(variables('publicIpName'), copyIndex())).ipAddress)]"
         }
       }
     }
