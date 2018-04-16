@@ -19,6 +19,9 @@
     },
     "subnet": {
       "type": "object"
+    },
+    "dnsName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -26,6 +29,7 @@
     "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('subnet').vnet), '/subnets/', parameters('subnet').name)]",
     "storageAccountName": "[concat(parameters('storageSettings').name, variables('namespace'))]",
     "vmName": "[concat(variables('namespace'), 'vm')]",
+    "publicIpName": "[concat(parameters('commonSettings').namespace, 'BrokerPublicIp')]",
     "nicName": "[concat(variables('namespace'), 'nic')]",
     "adminUsername": "[parameters('commonSettings').adminUsername]",
     "vmCount": "[parameters('machineSettingsbroker').vmCount]",
@@ -36,9 +40,28 @@
   "resources": [
     {
       "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('publicIpName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "ipCopyLoop",
+        "count": "[variables('vmCount')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('dnsName'), 'broker', copyIndex())]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicName'), copyindex())]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIpName'), copyIndex())]"
+      ],
       "copy": {
         "name": "nicCopyLoop",
         "count": "[variables('vmCount')]"
@@ -50,6 +73,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('addprefix'), copyindex())]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIpName'), copyIndex()))]"
+              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -259,6 +285,15 @@
           "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()) )]"
+            }
+          ],
+          "inputEndpoints": [
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName":  "[concat('brokerPort', copyindex())]",
+              "privatePort": 9092,
+              "publicPort": 9092,
+              "protocol": "tcp"
             }
           ]
         }
