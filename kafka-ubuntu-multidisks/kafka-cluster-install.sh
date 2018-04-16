@@ -98,7 +98,7 @@ while getopts :n:k:b:z:i:c:p:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
     m) # zookeeper myid
-      ZOOKEEPER_MYID=((${OPTARG} + 1))
+      ZOOKEEPER_MYID=$((${OPTARG}+1))
       ;;
     n) # kafka advertised host name
       KAFKA_ADVERTISED=${OPTARG}
