@@ -94,7 +94,7 @@ KAFKADIRSED="\/var\/lib\/kafkadir"
 KAFKA_ADVERTISED=""
 
 #Loop through options passed
-while getopts :n:k:b:z:i:c:p:h optname; do
+while getopts :m:n:k:b:z:i:c:p:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
     m) # zookeeper myid
