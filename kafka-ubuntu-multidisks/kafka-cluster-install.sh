@@ -44,6 +44,7 @@ help()
     echo "-z zookeeper not kafka"
     echo "-i zookeeper Private IP address prefix"
     echo "-n kafka advertised host name"
+    echo "-m zookeeper index"
 }
 
 log()
@@ -82,6 +83,7 @@ fi
 KF_VERSION="0.9.0.0"
 BROKER_ID=0
 ZOOKEEPER1KAFKA0="0"
+ZOOKEEPER_MYID=0
 
 ZOOKEEPER_IP_PREFIX="10.0.1.10"
 INSTANCE_COUNT=1
@@ -95,6 +97,9 @@ KAFKA_ADVERTISED=""
 while getopts :n:k:b:z:i:c:p:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
+    m) # zookeeper myid
+      ZOOKEEPER_MYID=((${OPTARG} + 1))
+      ;;
     n) # kafka advertised host name
       KAFKA_ADVERTISED=${OPTARG}
       ;;
@@ -167,7 +172,9 @@ expand_ip_range() {
 # Install Zookeeper - can expose zookeeper version
 install_zookeeper()
 {
-	log "log : install_zookeeper"
+	log "zklog : install_zookeeper"
+	log "zklog : myid = ${ZOOKEEPER_MYID}"
+
 	mkdir -p /var/lib/zookeeper
 	cd /var/lib/zookeeper
 	wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.11/zookeeper-3.4.11.tar.gz"
@@ -183,7 +190,8 @@ install_zookeeper()
 	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.11/conf/zoo.cfg
 	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
 
-	echo $(($1+1)) >> /var/lib/zookeeper/myid
+	#echo $(($1+1)) >> /var/lib/zookeeper/myid
+	echo ${ZOOKEEPER_MYID} >> /var/lib/zookeeper/myid
 
 	zookeeper-3.4.11/bin/zkServer.sh start
 }
@@ -214,6 +222,7 @@ install_kafka()
 {
 	log "kafkalog : install_kafka"
 	log "kafkalog : advertised = ${KAFKA_ADVERTISED}"
+
 	cd /usr/local
 	name=kafka
 	version=${KF_VERSION}
