@@ -22,6 +22,9 @@
     },
     "dnsName": {
       "type": "string"
+    },
+    "kafkaMinVersion" : {
+      "type": "string"
     }
   },
   "variables": {
@@ -178,7 +181,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": "[parameters('osSettings').scripts]",
-          "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', variables('zCount'),' -i ', variables('zSubnet'), ' -n ', reference(concat(variables('publicIpName'), copyIndex())).ipAddress)]"
+          "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', variables('zCount'),' -i ', variables('zSubnet'), ' -n ', reference(concat(variables('publicIpName'), copyIndex())).ipAddress, ' -k ', parameters('kafkaMinVersion'))]"
         }
       }
     }

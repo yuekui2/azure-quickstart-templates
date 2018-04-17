@@ -27,6 +27,17 @@
         "description": "Virtual machine administrator password"
       }
     },
+    "kafkaMinVersion" : {
+      "type": "string",
+      "defaultValue": "0.9.0.0",
+      "allowedValues": [
+        "1.1.0",
+        "0.9.0.0"
+      ],
+      "metadata": {
+        "description": "Kafka min version under major version 2.11"
+      }
+    },
     "tshirtSize": {
       "type": "string",
       "defaultValue": "Small",
@@ -294,6 +305,9 @@
           },
           "storageSettings": {
             "value": "[variables('tshirtSize').storage]"
+          },
+          "kafkaMinVersion" :{
+            "value": "[parameters('kafkaMinVersion')]"
           },
           "machineSettingsbroker": {
             "value": {
