@@ -269,7 +269,7 @@
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           }, 
-          "instanceId" : {
+          "redisInstanceId": {
             "value": "[copyindex()]"
           }
         }
@@ -312,7 +312,7 @@
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           }, 
-          "instanceId" : {
+          "redisInstanceId": {
             "value": "[variables('clusterSpec').totalMemberCountExcludingLast]"
           }          
         }
