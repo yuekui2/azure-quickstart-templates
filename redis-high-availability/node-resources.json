@@ -31,15 +31,35 @@
       "metadata": {
         "Description": "Administrator password used when provisioning virtual machines"
       }
+    },
+    "instanceId": {
+      "type": "int",
+      "metadata": {
+        "Description": "Redis instance ID"
+      }
     }
   },
-  "variables": {},
+  "variables": {
+    "publicIpName": "redisPublicIp"
+  },
   "resources": [
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('publicIpName'), parameters('instanceId')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+      }
+    },
     {
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat('nicMember', parameters('machineSettings').machineIndex)]",
       "apiVersion": "2015-05-01-preview",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIpName'), parameters('instanceId'))]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -47,6 +67,9 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(parameters('networkSettings').machineIpPrefix, parameters('machineSettings').machineIndex)]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIpName'), parameters('instanceId')))]"
+              },
               "subnet": {
                 "id": "[parameters('networkSettings').subnetRef]"
               }
@@ -90,6 +113,15 @@
           "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('nicMember', parameters('machineSettings').machineIndex))]"
+            }
+          ],
+          "inputEndpoints": [
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName":  "[concat('redisPort', parameters('instanceId'))]",
+              "privatePort": 6379,
+              "publicPort": 6379,
+              "protocol": "tcp"
             }
           ]
         }
