@@ -122,6 +122,13 @@
               "privatePort": 6379,
               "publicPort": 6379,
               "protocol": "tcp"
+            },
+            {
+              "enableDirectServerReturn": "False",
+              "endpointName":  "[concat('redisInternalPort', parameters('redisInstanceId'))]",
+              "privatePort": 16379,
+              "publicPort": 16379,
+              "protocol": "tcp"
             }
           ]
         }
