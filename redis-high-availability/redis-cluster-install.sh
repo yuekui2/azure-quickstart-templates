@@ -57,9 +57,9 @@ help()
 #############################################################################
 log()
 {
-	# If you want to enable this logging, uncomment the line below and specify your logging key 
-	#curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/${LOGGING_KEY}/tag/redis-extension,${HOSTNAME}
-	echo "$1"
+    # If you want to enable this logging add a un-comment the line below and add your account key 
+    curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
+    echo "$1"
 }
 
 log "Begin execution of Redis installation script extension on ${HOSTNAME}"
@@ -81,7 +81,7 @@ while getopts :n:v:c:m:s:i:p:lh optname; do
 		;;
     v)  # Version to be installed
 		VERSION=${OPTARG}
-		if [[ ($VERSION == 3.*) || ($VERSION == 4.*)]]; then IS_CLUSTER_AWARE=1; fi
+		if [[ $VERSION == 4.* ]]; then IS_CLUSTER_AWARE=1; fi
 		;;
 	c) # Number of instances
 		INSTANCE_COUNT=${OPTARG}
@@ -388,8 +388,10 @@ configure_redis
 
 # Step 4
 if [ "$IS_CLUSTER_AWARE" -eq 1 ]; then
+	log "cluster mode"
 	configure_redis_cluster
 else
+	log "standalone mode"
 	configure_redis_replication
 	configure_sentinel
 fi
