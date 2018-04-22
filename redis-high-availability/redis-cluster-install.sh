@@ -81,7 +81,7 @@ while getopts :n:v:c:m:s:i:p:lh optname; do
 		;;
     v)  # Version to be installed
 		VERSION=${OPTARG}
-		if [[ $VERSION == 3.* ]]; then IS_CLUSTER_AWARE=1; fi
+		if [[ ($VERSION == 3.*) || ($VERSION == 4.*)]]; then IS_CLUSTER_AWARE=1; fi
 		;;
 	c) # Number of instances
 		INSTANCE_COUNT=${OPTARG}
