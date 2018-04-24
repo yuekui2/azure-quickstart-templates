@@ -327,6 +327,10 @@
     "setupCommand": {
       "value": "[variables('vmScripts').setupCommand]",
       "type": "string"
+    },
+    "manualCommand": {
+      "value": "Log in to a Redis VM and manually run: /usr/local/bin/redis-trib.rb create --replicas 1 listOfIpPorts",
+      "type": "string"
     }
   }
 }

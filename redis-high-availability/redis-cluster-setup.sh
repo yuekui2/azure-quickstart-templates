@@ -43,9 +43,9 @@ help()
 
 log()
 {
-	# If you want to enable this logging add a un-comment the line below and add your account key 
-	#curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/${LOGGING_KEY}/tag/redis-extension,${HOSTNAME}
-	echo "$1"
+    # If you want to enable this logging add a un-comment the line below and add your account key 
+    curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
+    echo "$1"
 }
 
 # Expand a list of successive IP range defined by a starting address prefix (e.g. 10.0.0.1) and the number of machines in the range

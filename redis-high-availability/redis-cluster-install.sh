@@ -301,6 +301,9 @@ configure_redis_cluster()
 	# Enable the AOF persistence
 	sed -i "s/^appendonly no$/appendonly yes/g" /etc/redis/redis.conf
 
+	sed -i "s/^protected-mode yes$/protected-mode no/g" /etc/redis/redis.conf
+	sed -i "s/^bind 127.0.0.1$/#bind 127.0.0.1/g" /etc/redis/redis.conf
+
 	# Tune the RDB persistence
 	sed -i "s/^save.*$/# save/g" /etc/redis/redis.conf
 	echo "save 3600 1" >> /etc/redis/redis.conf
