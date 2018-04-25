@@ -102,12 +102,17 @@ done
 log "Configuring Redis cluster on ${INSTANCE_COUNT} nodes with ${SLAVE_COUNT} slave(s) for every master node"
 
 # Install the Ruby runtime that the cluster configuration script uses
-apt-get -y install ruby-full
+echo | sudo apt-add-repository ppa:brightbox/ruby-ng
+sudo apt-get update
+sudo apt-get -y install ruby2.3
 
 # Install the Redis client gem (a pre-requisite for redis-trib.rb)
-gem install redis
+sudo gem install redis
 
+# When exposing public IP, it is NOT easy to put together public IP and call this ruby script to
+# setup hash slots. Make it manually for now.
+#
 # Create a cluster based upon the specified host list and replica count
-echo "yes" | /usr/local/bin/redis-trib.rb create --replicas ${SLAVE_COUNT} $(expand_ip_range "${IP_PREFIX}-${INSTANCE_COUNT}")
+# echo "yes" | /usr/local/bin/redis-trib.rb create --replicas ${SLAVE_COUNT} $(expand_ip_range "${IP_PREFIX}-${INSTANCE_COUNT}")
 
 log "Redis cluster was configured successfully"
