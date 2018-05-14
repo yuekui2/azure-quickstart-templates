@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sshPublicKey": {
-      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAVUjb+H+bQgargG0Ew42/KjjIrJ4Vqwp8X3PKDCS7udZE8rTKx0ah8EfsVcSpzgHMOg2Dx/EBjF5/fE3QUwd8GCe1pNi875/Cf2CEfuQNhoxs+zXTdrVnaa6AnZszFHnPSS7QMhWA8lhjF4N2GCRQDDd3e45qNMc4TsNLz4dS90SNwNVbCyQnme46NTS5Fk2AbiJ5YqWF1UhEpUAdsWFsCRVQAHjH3Y57b2jk3RJJ9UFYQ5Trlow4ocOYEfsUGmr3yNFiIxlZC/sfx6WKoBxCOJhv/NJr0ow65zp/TC85IeDK5h8Jedd5UT2umdZDp4dbGhW0Aus2Md8yWE80/M9f replace_this_with_your@id_rsa.pub"
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXn25nM+vYnsujQH6JCg5lSTdKSYUBnDb1c5Mqe74sNBOKVThIhhDxD3B3nuFLPla2FpprKC8+1YgmRLpnQqe3nso0CvPCPFHrOplM+BA29IADVvdQzXDvkiP9AAYJ82cFL2bl8rbS36BD1dwGLT8cQtxh3G6e79c9ld6HgpJQ+0uy8Op8nRE9xTubk5q/POqLAVqtpxT8tfTug+6nYAKFfuWJQJ203wz8cTpUhhMB6DWKPEmlhlaVgRSHHboXqgA1i8zXvzDwPIfDB77vWyxi5g/GcIVCDPRHD55jsr8SGX4yGHT0R2eJNYbjT1wUP6pKr5rZ73j59Mhtr8pLMtJn kuiyu@kui-dt"
     },
     "nodeCount": {
       "value": 3
