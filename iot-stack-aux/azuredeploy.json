@@ -206,27 +206,23 @@
         }
       },
       {
-        "name": "broker-node",
+        "name": "jumpbox",
         "type": "Microsoft.Resources/deployments",
         "apiVersion": "2015-01-01",
         "dependsOn": [
-          "[concat('Microsoft.Resources/deployments/', 'zookeeper-node')]"
+          "[concat('Microsoft.Resources/deployments/', 'shared')]"
         ],
         "properties": {
           "mode": "Incremental",
           "templateLink": {
-            "uri": "[variables('tshirtSize').vmTemplate]",
+            "uri": "[concat(variables('templateBaseUrl'), 'jumpbox-resources.json')]", 
             "contentVersion": "1.0.0.0"
           },
           "parameters": {
-            "adminPassword": {
-              "value": "[parameters('adminPassword')]"
-            },
-            "osSettings": {
-              "value": "[variables('osSettings')]"
-            },
-            "subnet": {
-              "value": "[variables('networkSettings').subnets.data]"
+            "storageSettings": {
+              "value": {
+                "name": "[concat(parameters('storageAccountNamePrefix'), variables('tshirtSize').storage.jumpbox)]"
+              }
             },
             "dnsName": {
               "value": "[parameters('domainName')]"
@@ -234,28 +230,17 @@
             "commonSettings": {
               "value": {
                 "adminUsername": "[parameters('adminUsername')]",
-                "namespace": "bk"
+                "namespace": "jumpbox"
               }
             },
-            "storageSettings": {
-              "value": "[variables('tshirtSize').storage]"
+            "adminPassword": {
+              "value": "[parameters('adminPassword')]"
             },
-            "kafkaMajVersion" :{
-              "value": "[parameters('kafkaMajVersion')]"
+            "subnet": {
+              "value": "[variables('networkSettings').subnets.dmz]"
             },
-            "kafkaMinVersion" :{
-              "value": "[parameters('kafkaMinVersion')]"
-            },
-            "machineSettingsbroker": {
-              "value": {
-                "vmSize": "[variables('tshirtSize').vmSize]",
-                "diskSize": "[variables('tshirtSize').diskSize]",
-                "zookeeperCount": "[variables('tshirtSize').zookeeperCount]",
-                "vmCount": "[variables('tshirtSize').brokerCount]",
-                "availabilitySet": "[variables('availabilitySetSettings').name]",
-                "zookeeperSubnet": "[variables('networkSettings').subnets.zookeeper.addprefix]",
-                "addprefix": "[variables('networkSettings').subnets.data.addprefix]"
-              }
+            "osSettings": {
+              "value": "[variables('osSettings')]"
             }
           }
         }
