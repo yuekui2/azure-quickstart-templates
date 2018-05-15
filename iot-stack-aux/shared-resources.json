@@ -46,12 +46,6 @@
             }
           },
           {
-            "name": "[parameters('networkSettings').subnets.zookeeper.name]",
-            "properties": {
-              "addressPrefix": "[parameters('networkSettings').subnets.zookeeper.prefix]"
-            }
-          },
-          {
             "name": "[parameters('networkSettings').subnets.data.name]",
             "properties": {
               "addressPrefix": "[parameters('networkSettings').subnets.data.prefix]"
