@@ -94,12 +94,12 @@
             0,
             0
           ],
-          "jumpbox": 1
+          "jumpbox": 0
         }
       },
       "tshirtSize": "[variables(concat('tshirtSize', parameters('tshirtSize')))]",
       "vmTemplatezookeeper": "[concat(variables('templateBaseUrl'), 'zookeeper-resources.json')]",
-      "jumpboxTemplateUrl": "[concat(variables('templateBaseUrl'), variables(concat('jumpboxTemplate',parameters('jumpbox'))))]",
+      "jumpboxTemplateUrl": "[concat(variables('templateBaseUrl'), variables(concat('jumpboxTemplate','Enabled')))]",
       "osSettings": {
         "scripts": [
           "[concat(variables('templateBaseUrl'), 'kafka-cluster-install.sh')]",
@@ -303,6 +303,9 @@
       }
     ],
     "outputs": {
-        
+      "jumpboxTemplateUrl": {
+        "value": "[variables('jumpboxTemplateUrl')]",
+        "type": "string"
+      }
     }
 }
