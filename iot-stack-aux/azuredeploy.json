@@ -99,7 +99,6 @@
       },
       "tshirtSize": "[variables(concat('tshirtSize', parameters('tshirtSize')))]",
       "vmTemplatezookeeper": "[concat(variables('templateBaseUrl'), 'zookeeper-resources.json')]",
-      "jumpboxTemplateUrl": "[concat(variables('templateBaseUrl'), variables(concat('jumpboxTemplate','Enabled')))]",
       "osSettings": {
         "scripts": [
           "[concat(variables('templateBaseUrl'), 'kafka-cluster-install.sh')]",
@@ -260,52 +259,9 @@
             }
           }
         }
-      },
-      {
-        "name": "jumpbox",
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2015-01-01",
-        "dependsOn": [
-          "[concat('Microsoft.Resources/deployments/', 'shared')]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('jumpboxTemplateUrl')]",
-            "contentVersion": "1.0.0.0"
-          },
-          "parameters": {
-            "storageSettings": {
-              "value": {
-                "name": "[concat(parameters('storageAccountNamePrefix'), variables('tshirtSize').storage.jumpbox)]"
-              }
-            },
-            "dnsName": {
-              "value": "[parameters('domainName')]"
-            },
-            "commonSettings": {
-              "value": {
-                "adminUsername": "[parameters('adminUsername')]",
-                "namespace": "jumpbox"
-              }
-            },
-            "adminPassword": {
-              "value": "[parameters('adminPassword')]"
-            },
-            "subnet": {
-              "value": "[variables('networkSettings').subnets.dmz]"
-            },
-            "osSettings": {
-              "value": "[variables('osSettings')]"
-            }
-          }
-        }
       }
     ],
     "outputs": {
-      "jumpboxTemplateUrl": {
-        "value": "[variables('jumpboxTemplateUrl')]",
-        "type": "string"
       }
     }
 }
