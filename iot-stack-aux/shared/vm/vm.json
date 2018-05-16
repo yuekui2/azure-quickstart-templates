@@ -42,9 +42,9 @@
             ]
         },
         "availabilitySetSettings": {
-          "name": "kafkaAvailabilitySet",
-          "fdCount": 3,
-          "udCount": 5
+            "name": "kafkaAvailabilitySet",
+            "fdCount": 3,
+            "udCount": 5
         }
     },
     "resources": [
@@ -71,14 +71,14 @@
             }
         },
         {
-          "type": "Microsoft.Compute/availabilitySets",
-          "name": "[variables('availabilitySetSettings').name]",
-          "apiVersion": "2017-03-30",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
-            "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
-          }
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('availabilitySetSettings').name]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
+                "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
+            }
         }
     ],
     "outputs": {}
