@@ -180,7 +180,7 @@
             },
             "properties": {
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetSettings').name)]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'iotauxas')]"
                 },
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
