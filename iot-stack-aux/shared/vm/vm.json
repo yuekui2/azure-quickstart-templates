@@ -169,7 +169,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmNamePrefix'), copyindex())]",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/subnets', concat(parameters('existingVnetName'), '/', parameters('newSubnetName')) )]",
