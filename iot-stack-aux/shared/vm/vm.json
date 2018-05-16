@@ -30,7 +30,18 @@
             }
         }
     },
-    "variables": {},
+    "variables": {
+        "storage": {
+            "name": "[parameters('storageAccountNamePrefix')]",
+            "count": 1,
+            "pool": "db",
+            "map": [
+                0,
+                0,
+                0
+            ]
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
