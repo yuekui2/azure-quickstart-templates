@@ -40,6 +40,11 @@
                 0,
                 0
             ]
+        },
+        "availabilitySetSettings": {
+            "name": "iotauxas",
+            "fdCount": 3,
+            "udCount": 5
         }
     },
     "resources": [
@@ -63,6 +68,16 @@
             },
             "properties": {
                 "accountType": "Standard_LRS"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('availabilitySetSettings').name]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
+                "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
             }
         }
     ],
