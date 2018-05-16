@@ -195,37 +195,37 @@
                         },
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
-                    }
-                },
-                "dataDisks": [
-                    {
-                        "name": "datadisk1",
-                        "diskSizeGB": "[variables('diskSize')]",
-                        "lun": 0,
-                        "vhd": {
-                            "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk1.vhd')]"
-                        },
-                        "caching": "None",
-                        "createOption": "Empty"
                     },
-                    {
-                        "name": "datadisk2",
-                        "diskSizeGB": "[variables('diskSize')]",
-                        "lun": 1,
-                        "vhd": {
-                            "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk2.vhd')]"
+                    "dataDisks": [
+                        {
+                            "name": "datadisk1",
+                            "diskSizeGB": "[variables('diskSize')]",
+                            "lun": 0,
+                            "vhd": {
+                                "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk1.vhd')]"
+                            },
+                            "caching": "None",
+                            "createOption": "Empty"
                         },
-                        "caching": "None",
-                        "createOption": "Empty"
-                    }
-                ]
-            },
-            "networkProfile": {
-                "networkInterfaces": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
-                    }
-                ]
+                        {
+                            "name": "datadisk2",
+                            "diskSizeGB": "[variables('diskSize')]",
+                            "lun": 1,
+                            "vhd": {
+                                "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk2.vhd')]"
+                            },
+                            "caching": "None",
+                            "createOption": "Empty"
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
+                        }
+                    ]
+                }
             }
         },
         {
