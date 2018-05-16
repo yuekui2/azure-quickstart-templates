@@ -167,11 +167,13 @@
             }
         },
         {
-            "apiVersion": "2015-05-01-preview",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmNamePrefix'), copyindex())]",
+            "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/subnets', concat(parameters('existingVnetName'), '/', parameters('newSubnetName')) )]",
+                "[concat('Microsoft.Compute/availabilitySets', variables('availabilitySetSettings').name)]",
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]"
             ],
             "properties": {
@@ -231,7 +233,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('vmNamePrefix'), copyindex(), '/vmsetup')]",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmNamePrefix'), copyindex())]"
