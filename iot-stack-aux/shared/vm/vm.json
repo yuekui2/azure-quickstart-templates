@@ -38,21 +38,21 @@
         },
         "vmNamePrefix": {
             "type": "string",
-            "default": "auxvm",
+            "defaultValue": "auxvm",
             "metadata": {
                 "description": "Virtual machine name prefix"
             }
         },
         "vmCount": {
             "type": "int",
-            "default": 3,
+            "defaultValue": 3,
             "metadata": {
                 "description": "Virtual machine count"
             }
         },
         "vmSize": {
             "type": "string",
-            "default": "Standard_A1",
+            "defaultValue": "Standard_A1",
             "allowedValues": [
                 "Standard_A1",
                 "Standard_A3",
@@ -65,7 +65,7 @@
         },
         "adminUsername": {
             "type": "string",
-            "default": "azureuser",
+            "defaultValue": "azureuser",
             "metadata": {
                 "description": "Virtual machine admin username"
             }
