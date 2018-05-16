@@ -92,9 +92,9 @@
             }
         },
         {
-            "apiVersion": "2015-05-01-preview",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(variables('nicName'), copyindex())]",
+            "apiVersion": "2017-06-01",
             "location": "[resourceGroup().location]",
             "copy": {
                 "name": "nicCopyLoop",
