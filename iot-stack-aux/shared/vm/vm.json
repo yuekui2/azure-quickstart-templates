@@ -49,12 +49,26 @@
     },
     "resources": [
         {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(parameters('existingVnetName'), '/', parameters('newSubnetName'))]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[concat(variables('storageSettings').name, copyindex())]",
             "apiVersion": "2017-06-01",
             "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "dbStoragePoolLoop",
+                "count": "[variables('storageSettings').count]"
+            },
             "properties": {
-                "addressPrefix": "[parameters('newSubnetAddressPrefix')]"
+                "accountType": "Standard_LRS"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('availabilitySetSettings').name]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
+                "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
             }
         }
     ],
