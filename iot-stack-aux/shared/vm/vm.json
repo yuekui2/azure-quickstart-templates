@@ -2,29 +2,51 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "existingVnetName" : {
-            "type":"string",
+        "existingVnetName": {
+            "type": "string",
             "defaultValue": "stackvnet",
             "metadata": {
                 "description": "Existing virtual network name"
             }
         },
-        "newSubnetName" : {
-            "type":"string",
+        "newSubnetName": {
+            "type": "string",
             "defaultValue": "auxsubset",
             "metadata": {
                 "description": "New subnet name"
             }
         },
-        "newSubnetAddressPrefix" : {
-            "type":"string",
+        "newSubnetAddressPrefix": {
+            "type": "string",
             "defaultValue": "10.0.1.0/24",
             "metadata": {
                 "description": "New subnet address prefix"
             }
+        },
+        "storageAccountNamePrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique name of the new storage account that will be created to store virtual machine VHDs"
+            }
         }
     },
-    "variables": {},
+    "variables": {
+        "storageSettings": {
+            "name": "[parameters('storageAccountNamePrefix')]",
+            "count": 1,
+            "pool": "db",
+            "map": [
+                0,
+                0,
+                0
+            ]
+        },
+        "availabilitySetSettings": {
+          "name": "kafkaAvailabilitySet",
+          "fdCount": 3,
+          "udCount": 5
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
@@ -34,6 +56,29 @@
             "properties": {
                 "addressPrefix": "[parameters('newSubnetAddressPrefix')]"
             }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[concat(variables('storageSettings').name, copyindex())]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "dbStoragePoolLoop",
+                "count": "[variables('storageSettings').count]"
+            },
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        },
+        {
+          "type": "Microsoft.Compute/availabilitySets",
+          "name": "[variables('availabilitySetSettings').name]",
+          "apiVersion": "2017-03-30",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
+            "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
+          }
         }
     ],
     "outputs": {}
