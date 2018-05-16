@@ -176,6 +176,10 @@
                 "[concat('Microsoft.Compute/availabilitySets', variables('availabilitySetSettings').name)]",
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]"
             ],
+            "copy": {
+                "name": "vmCopyLoop",
+                "count": "[parameters('vmCount')]"
+            },
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', [variables('availabilitySetSettings').name]]"
