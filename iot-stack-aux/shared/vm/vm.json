@@ -234,11 +234,11 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vmNamePrefix'), copyindex(), '/vmsetup')]",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/vmsetup')]",
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmNamePrefix'), copyindex())]"
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmNamePrefix'), copyindex())]"
             ],
             "copy": {
                 "name": "scriptCopyLoop",
