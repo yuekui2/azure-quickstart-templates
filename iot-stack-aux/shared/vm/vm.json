@@ -23,6 +23,13 @@
                 "description": "New subnet address prefix"
             }
         },
+        "newVmPrivateIpAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.1",
+            "metadata": {
+                "description": "New virtual machine private IP address prefix"
+            }
+        },
         "storageAccountNamePrefix": {
             "type": "string",
             "metadata": {
@@ -45,7 +52,11 @@
             "name": "iotauxas",
             "fdCount": 3,
             "udCount": 5
-        }
+        },
+        "namespace": "aux",
+        "nicName": "[concat(variables('namespace'), 'nic')]",
+        "vmCount": 3,
+        "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName')), '/subnets/',  parameters('newSubnetName'))]"
     },
     "resources": [
         {
@@ -79,6 +90,30 @@
                 "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
                 "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
             }
+        },
+        {
+          "apiVersion": "2015-05-01-preview",
+          "type": "Microsoft.Network/networkInterfaces",
+          "name": "[concat(variables('nicName'), copyindex())]",
+          "location": "[resourceGroup().location]",
+          "copy": {
+            "name": "nicCopyLoop",
+            "count": "[variables('vmCount')]"
+          },
+          "properties": {
+            "ipConfigurations": [
+              {
+                "name": "ipconfig1",
+                "properties": {
+                  "privateIPAllocationMethod": "Static",
+                  "privateIPAddress": "[concat(parameters('newVmPrivateIpAddressPrefix'), copyindex())]",
+                  "subnet": {
+                    "id": "[variables('subnetRef')]"
+                  }
+                }
+              }
+            ]
+          }
         }
     ],
     "outputs": {}
