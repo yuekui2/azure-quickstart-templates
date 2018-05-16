@@ -92,28 +92,28 @@
             }
         },
         {
-          "apiVersion": "2015-05-01-preview",
-          "type": "Microsoft.Network/networkInterfaces",
-          "name": "[concat(variables('nicName'), copyindex())]",
-          "location": "[resourceGroup().location]",
-          "copy": {
-            "name": "nicCopyLoop",
-            "count": "[variables('vmCount')]"
-          },
-          "properties": {
-            "ipConfigurations": [
-              {
-                "name": "ipconfig1",
-                "properties": {
-                  "privateIPAllocationMethod": "Static",
-                  "privateIPAddress": "[concat(parameters('newVmPrivateIpAddressPrefix'), copyindex())]",
-                  "subnet": {
-                    "id": "[variables('subnetRef')]"
-                  }
-                }
-              }
-            ]
-          }
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('nicName'), copyindex())]",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "nicCopyLoop",
+                "count": "[variables('vmCount')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[concat(parameters('newVmPrivateIpAddressPrefix'), copyindex())]",
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
         }
     ],
     "outputs": {}
