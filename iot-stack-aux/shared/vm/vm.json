@@ -30,45 +30,15 @@
             }
         }
     },
-    "variables": {
-        "storageSettings": {
-            "name": "[parameters('storageAccountNamePrefix')]",
-            "count": 1,
-            "pool": "db",
-            "map": [
-                0,
-                0,
-                0
-            ]
-        },
-        "availabilitySetSettings": {
-            "name": "kafkaAvailabilitySet",
-            "fdCount": 3,
-            "udCount": 5
-        }
-    },
+    "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Storage/storageAccounts",
-            "name": "[concat(variables('storageSettings').name, copyindex())]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVnetName'), '/', parameters('newSubnetName'))]",
             "apiVersion": "2017-06-01",
             "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "dbStoragePoolLoop",
-                "count": "[variables('storageSettings').count]"
-            },
             "properties": {
-                "accountType": "Standard_LRS"
-            }
-        },
-        {
-            "type": "Microsoft.Compute/availabilitySets",
-            "name": "[variables('availabilitySetSettings').name]",
-            "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
-                "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
+                "addressPrefix": "[parameters('newSubnetAddressPrefix')]"
             }
         }
     ],
