@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingVnetName" : {
+            "type":"string",
+            "defaultValue": "stackvnet",
+            "metadata": {
+                "description": "Existing virtual network name"
+            }
+        },
+        "newSubnetName" : {
+            "type":"string",
+            "defaultValue": "auxsubset",
+            "metadata": {
+                "description": "New subnet name"
+            }
+        },
+        "newSubnetAddressPrefix" : {
+            "type":"string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "New subnet address prefix"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVnetName'), '/', parameters('newSubnetName'))]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "mode": "Incremental",
+                "addressPrefix": "[parameters('newSubnetAddressPrefix')]"
+            }
+        }
+    ],
+    "outputs": {}
+}
