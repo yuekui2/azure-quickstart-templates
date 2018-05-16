@@ -35,6 +35,46 @@
             "metadata": {
                 "description": "Unique name of the new storage account that will be created to store virtual machine VHDs"
             }
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "default": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name prefix"
+            }
+        },
+        "vmCount": {
+            "type": "int",
+            "default": 3,
+            "metadata": {
+                "description": "Virtual machine count"
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "default": "Standard_A1",
+            "allowedValues": [
+                "Standard_A1",
+                "Standard_A3",
+                "Standard_A4",
+                "Standard_A7"
+            ],
+            "metadata": {
+                "description": "Virtual machine size"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "default": "azureuser",
+            "metadata": {
+                "description": "Virtual machine admin username"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Virtual machine admin password"
+            }
         }
     },
     "variables": {
@@ -55,8 +95,19 @@
         },
         "namespace": "aux",
         "nicName": "[concat(variables('namespace'), 'nic')]",
-        "vmCount": 3,
-        "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName')), '/subnets/',  parameters('newSubnetName'))]"
+        "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName')), '/subnets/',  parameters('newSubnetName'))]",
+        "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04-LTS",
+            "version": "latest"
+        },
+        "diskSize": 1023,
+        "templateBaseUrl": "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/",
+        "scripts": [
+            "[concat(variables('templateBaseUrl'), 'iot-stack-aux/shared/vm/vm.sh')]",
+            "[concat(variables('templateBaseUrl'), 'shared_scripts/ubuntu/vm-disk-utils-0.1.sh')]"
+        ]
     },
     "resources": [
         {
@@ -98,7 +149,7 @@
             "location": "[resourceGroup().location]",
             "copy": {
                 "name": "nicCopyLoop",
-                "count": "[variables('vmCount')]"
+                "count": "[parameters('vmCount')]"
             },
             "properties": {
                 "ipConfigurations": [
@@ -114,7 +165,97 @@
                     }
                 ]
             }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex())]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', [variables('availabilitySetSettings').name]]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('vmNamePrefix'), copyindex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": "[variables('imageReference')]",
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(), '-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "dataDisks": [
+                    {
+                        "name": "datadisk1",
+                        "diskSizeGB": "[variables('diskSize')]",
+                        "lun": 0,
+                        "vhd": {
+                            "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk1.vhd')]"
+                        },
+                        "caching": "None",
+                        "createOption": "Empty"
+                    },
+                    {
+                        "name": "datadisk2",
+                        "diskSizeGB": "[variables('diskSize')]",
+                        "lun": 1,
+                        "vhd": {
+                            "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk2.vhd')]"
+                        },
+                        "caching": "None",
+                        "createOption": "Empty"
+                    }
+                ]
+            },
+            "networkProfile": {
+                "networkInterfaces": [
+                    {
+                        "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('vmNamePrefix'), copyindex(), '/vmsetup')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmNamePrefix'), copyindex())]"
+            ],
+            "copy": {
+                "name": "scriptCopyLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('bash vm-disk-utils-0.1.sh', ' -s')]"
+                }
+            }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "vmip": {
+            "value": "[reference(concat(variables('nicName'),0)).ipConfigurations[0].properties.privateIPAddress]",
+            "type": "string"
+        }
+    }
 }
