@@ -192,9 +192,9 @@
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', concat(variables('storageSettings').name, copyindex()))]",
-                "[resourceId('Microsoft.Storage/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageSettings').name, copyindex())]",
+                "[concat('Microsoft.Storage/networkInterfaces/', variables('nicName'), copyindex())]",
+                "[concat('Microsoft.Compute/disks/', parameters('vmNamePrefix'), copyindex(), '-datadisk1')]"
             ],
             "copy": {
                 "name": "vmCopyLoop",
