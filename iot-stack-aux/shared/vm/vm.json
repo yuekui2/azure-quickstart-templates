@@ -151,26 +151,6 @@
                     }
                 ]
             }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1')]",
-            "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "copy": {
-                "name": "dataDiskCopyLoop",
-                "count": "[parameters('vmCount')]"
-            },
-            "properties": {
-                "creationData": {
-                    "caching": "None",
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": "[variables('diskSize')]"
-            }
         }
     ],
     "outputs": {
