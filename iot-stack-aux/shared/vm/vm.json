@@ -30,10 +30,10 @@
                 "description": "New virtual machine private IP address prefix"
             }
         },
-        "storageAccountNamePrefix": {
+        "storageAccountName": {
             "type": "string",
             "metadata": {
-                "description": "Unique name of the new storage account that will be created to store virtual machine VHDs"
+                "description": "Unique name of the new storage account"
             }
         },
         "vmNamePrefix": {
@@ -78,16 +78,6 @@
         }
     },
     "variables": {
-        "storageSettings": {
-            "name": "[parameters('storageAccountNamePrefix')]",
-            "count": 1,
-            "pool": "db",
-            "map": [
-                0,
-                0,
-                0
-            ]
-        },
         "availabilitySetSettings": {
             "name": "iotauxas",
             "fdCount": 3,
@@ -121,13 +111,9 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[concat(variables('storageSettings').name, copyindex())]",
+            "name": "[parameters('storageAccountName')]",
             "apiVersion": "2017-06-01",
             "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "dbStoragePoolLoop",
-                "count": "[variables('storageSettings').count]"
-            },
             "properties": {
                 "accountType": "Standard_LRS"
             }
@@ -192,7 +178,7 @@
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', concat(variables('storageSettings').name, copyindex())]",
+                "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex())]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1'))]"
             ],
