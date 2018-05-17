@@ -168,7 +168,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmNamePrefix'), copyindex(), '-datadisk1')]",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1')]",
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -194,7 +194,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', concat(variables('storageSettings').name, copyindex()))]",
                 "[resourceId('Microsoft.Storage/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmNamePrefix'), copyindex(), '-datadisk1'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1'))]"
             ],
             "copy": {
                 "name": "vmCopyLoop",
@@ -222,10 +222,10 @@
                     "dataDisks": [
                         {
                             "lun": 0,
-                            "name": "[concat(variables('vmNamePrefix'), copyindex(), '-datadisk1')]",
+                            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1')]",
                             "createOption": "attach",
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmNamePrefix'), copyindex(), '-datadisk1'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1'))]"
                             }
                         }
                     ]
