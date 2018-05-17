@@ -251,7 +251,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "[concat('bash vm-disk-utils-0.1.sh', ' -s')]"
+                    "commandToExecute": "bash vm.sh"
                 }
             }
         }
