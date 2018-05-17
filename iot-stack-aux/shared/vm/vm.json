@@ -167,12 +167,34 @@
             }
         },
         {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmNamePrefix'), copyindex(), '-datadisk1')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "copy": {
+                "name": "dataDiskCopyLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "properties": {
+                "creationData": {
+                    "caching": "None",
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskSize')]"
+            }
+        },
+        {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmNamePrefix'), copyindex())]",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]"
+                "[resourceId('Microsoft.Storage/storageAccounts/', concat(variables('storageSettings').name, copyindex()))]",
+                "[resourceId('Microsoft.Storage/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmNamePrefix'), copyindex(), '-datadisk1'))]"
             ],
             "copy": {
                 "name": "vmCopyLoop",
@@ -194,32 +216,17 @@
                     "imageReference": "[variables('imageReference')]",
                     "osDisk": {
                         "name": "osdisk",
-                        "vhd": {
-                            "uri": "[concat('http://',variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(), '-osdisk.vhd')]"
-                        },
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
                     },
                     "dataDisks": [
                         {
-                            "name": "datadisk1",
-                            "diskSizeGB": "[variables('diskSize')]",
                             "lun": 0,
-                            "vhd": {
-                                "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk1.vhd')]"
-                            },
-                            "caching": "None",
-                            "createOption": "Empty"
-                        },
-                        {
-                            "name": "datadisk2",
-                            "diskSizeGB": "[variables('diskSize')]",
-                            "lun": 1,
-                            "vhd": {
-                                "uri": "[concat('http://', variables('storageSettings').name, variables('storageSettings').map[copyindex()],'.blob.core.windows.net/vhds/', parameters('vmNamePrefix'), copyindex(),'-datadisk2.vhd')]"
-                            },
-                            "caching": "None",
-                            "createOption": "Empty"
+                            "name": "[concat(variables('vmNamePrefix'), copyindex(), '-datadisk1')]",
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmNamePrefix'), copyindex(), '-datadisk1'))]"
+                            }
                         }
                     ]
                 },
@@ -229,29 +236,6 @@
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
                         }
                     ]
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/vmsetup')]",
-            "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmNamePrefix'), copyindex())]"
-            ],
-            "copy": {
-                "name": "scriptCopyLoop",
-                "count": "[parameters('vmCount')]"
-            },
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "bash vm.sh"
                 }
             }
         }
