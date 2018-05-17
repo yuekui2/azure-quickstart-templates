@@ -179,7 +179,7 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex())]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1'))]"
             ],
             "copy": {
