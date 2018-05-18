@@ -56,9 +56,9 @@
                 "description": "Namespace for NIC etc"
             }
         },
-        "dnsLabelPrefix": {
+        "dnsName": {
             "type": "string",
-            "defaultValue": "auxjumpbox",
+            "defaultValue": "jumpboxdns",
             "metadata": {
                 "description": "DNS label prefix"
             }
@@ -104,8 +104,8 @@
             "properties": {
                 "publicIPAllocationMethod": "Static",
                 "dnsSettings": {
-                    "domainNameLabel": "[parameters('dnsLabelPrefix')]"
-                  }
+                    "domainNameLabel": "[parameters('dnsName')]"
+                }
             }
         },
         {
@@ -174,14 +174,5 @@
             }
         }
     ],
-    "outputs": {
-        "hostname": {
-            "type": "string",
-            "value": "[reference(variables('publicIpName')).dnsSettings.fqdn]"
-        },
-        "sshCommand": {
-            "type": "string",
-            "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('publicIPAddressName')).dnsSettings.fqdn)]"
-        }
-    }
+    "outputs": {}
 }
