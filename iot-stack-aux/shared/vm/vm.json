@@ -82,6 +82,12 @@
             "metadata": {
                 "description": "Namespace for NIC etc"
             }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
         }
     },
     "variables": {
@@ -99,10 +105,9 @@
             "version": "latest"
         },
         "diskSize": 1023,
-        "templateBaseUrl": "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/",
         "scripts": [
-            "[concat(variables('templateBaseUrl'), 'iot-stack-aux/shared/vm/vm.sh')]",
-            "[concat(variables('templateBaseUrl'), 'shared_scripts/ubuntu/vm-disk-utils-0.1.sh')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/vm.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'shared_scripts/ubuntu/vm-disk-utils-0.1.sh')]"
         ]
     },
     "resources": [
