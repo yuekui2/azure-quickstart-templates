@@ -13,4 +13,4 @@ then
 fi
 
 #Format the data disk
-bash vm-disk-utils-0.1.sh -s
+bash vm-disk-utils-0.1.sh
