@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmNamePrefix": {
+            "type": "string",
+            "defaultValue": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name prefix"
+            }
+        },
+        "zkCount": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Zookeeper virtual machine count"
+            }
+        },
+        "zkVmPrivateIpAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.1",
+            "metadata": {
+                "description": "Zookeeper virtual machine private IP address prefix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        },
+        "kafkaMinVersion": {
+            "type": "string",
+            "defaultValue": "2.12",
+            "allowedValues": [
+                "2.11",
+                "2.12"
+            ],
+            "metadata": {
+                "description": "Kafka min version under major version 1.1.0"
+            }
+        }
+    },
+    "variables": {
+        "scripts": [
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/scripts/kafka-cluster-install.sh')]"
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/kafka')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "scriptCopyLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', parameters('zkCount'),' -i ', parameters('zkVmPrivateIpAddressPrefix'), ' -k ', parameters('kafkaMinVersion'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

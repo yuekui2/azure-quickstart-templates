@@ -222,17 +222,17 @@ install_kafka()
 
     cd /usr/local
     name=kafka
-    version=${KF_VERSION}
+    min_ver=${KF_VERSION}
     #this Kafka version is prefix same used for all versions
-    kafkaversion=2.11
+    maj_ver=1.1.0
     description="Apache Kafka is a distributed publish-subscribe messaging system."
     url="https://kafka.apache.org/"
     arch="all"
     section="misc"
     license="Apache Software License 2.0"
     package_version="-1"
-    src_package="kafka_${kafkaversion}-${version}.tgz"
-    download_url=http://archive.apache.org/dist/kafka/${version}/${src_package}
+    src_package="kafka_${min_ver}-${maj_ver}.tgz"
+    download_url=http://archive.apache.org/dist/kafka/${maj_ver}/${src_package}
 
     rm -rf kafka
     mkdir -p kafka
@@ -244,18 +244,21 @@ install_kafka()
       wget ${download_url}
     fi
     tar zxf ${src_package}
-    cd kafka_${kafkaversion}-${version}
+    cd kafka_${min_ver}-${maj_ver}
     log "kafkalog : change config"
 
     sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
     sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties
     sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties
-    echo "advertised.host.name=${KAFKA_ADVERTISED}" >> config/server.properties
+
+    if [ ! -z "${KAFKA_ADVERTISED}" ]; then
+      echo "advertised.host.name=${KAFKA_ADVERTISED}" >> config/server.properties
+    fi
 
     log "kafkalog : run kafka"
 
-    chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
-    /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
+    chmod u+x /usr/local/kafka/kafka_${min_ver}-${maj_ver}/bin/kafka-server-start.sh
+    /usr/local/kafka/kafka_${min_ver}-${maj_ver}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${min_ver}-${maj_ver}/config/server.properties &
     log "kafkalog : end of install_kafka"
 }
 
