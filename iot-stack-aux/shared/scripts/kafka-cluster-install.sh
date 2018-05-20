@@ -144,7 +144,7 @@ install_java()
 
 expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
-    for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
+    for (( n=0; n<${HOST_IPS[1]}; n++))
     do
         echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg
     done
@@ -157,7 +157,7 @@ expand_ip_range() {
 
     declare -a EXPAND_STATICIP_RANGE_RESULTS=()
 
-    for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
+    for (( n=0; n<${HOST_IPS[1]}; n++ ))
     do
         HOST="${HOST_IPS[0]}${n}:${ZOOKEEPER_PORT}"
         EXPAND_STATICIP_RANGE_RESULTS+=($HOST)
