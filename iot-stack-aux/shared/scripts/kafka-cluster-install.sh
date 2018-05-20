@@ -10,10 +10,10 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # Author: Cognosys Technologies
- 
-### 
+
+###
 ### Warning! This script partitions and formats disk information be careful where you run it
 ###          This script is currently under development and has only been tested on Ubuntu images in Azure
 ###          This script is not currently idempotent and only works for provisioning at the moment
@@ -49,7 +49,7 @@ help()
 
 log()
 {
-    # If you want to enable this logging add a un-comment the line below and add your account key 
+    # If you want to enable this logging add a un-comment the line below and add your account key
     curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
     echo "$1"
 }
@@ -62,9 +62,6 @@ then
     echo "You must be root to run this program." >&2
     exit 3
 fi
-
-#Format the data disk
-bash vm-disk-utils-0.1.sh -s
 
 # TEMP FIX - Re-evaluate and remove when possible
 # This is an interim fix for hostname resolution in current VM
@@ -85,7 +82,7 @@ BROKER_ID=0
 ZOOKEEPER1KAFKA0="0"
 ZOOKEEPER_MYID=0
 
-ZOOKEEPER_IP_PREFIX="10.0.1.10"
+ZOOKEEPER_IP_PREFIX=""
 INSTANCE_COUNT=1
 ZOOKEEPER_PORT="2181"
 KAFKADIR="/var/lib/kafkadir"
@@ -135,11 +132,11 @@ install_java()
 {
     log "Installing Java kui"
     #add-apt-repository -y ppa:webupd8team/java
-    apt-get -y update 
+    apt-get -y update
     #echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
     #echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
     #apt-get -y install oracle-java7-installer
-	apt-get -y install default-jre
+    apt-get -y install default-jre
 }
 
 # Expand a list of successive IP range defined by a starting address prefix (e.g. 10.0.0.1) and the number of machines in the range
@@ -149,7 +146,7 @@ expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
-        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg       
+        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg
     done
 }
 
@@ -163,7 +160,7 @@ expand_ip_range() {
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
         HOST="${HOST_IPS[0]}${n}:${ZOOKEEPER_PORT}"
-                EXPAND_STATICIP_RANGE_RESULTS+=($HOST)
+        EXPAND_STATICIP_RANGE_RESULTS+=($HOST)
     done
 
     echo "${EXPAND_STATICIP_RANGE_RESULTS[@]}"
@@ -172,94 +169,94 @@ expand_ip_range() {
 # Install Zookeeper - can expose zookeeper version
 install_zookeeper()
 {
-	log "zklog : install_zookeeper"
-	log "zklog : myid = ${ZOOKEEPER_MYID}"
+    log "zklog : install_zookeeper"
+    log "zklog : myid = ${ZOOKEEPER_MYID}"
 
-	mkdir -p /var/lib/zookeeper
-	cd /var/lib/zookeeper
-	wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz"
-	tar -xvf "zookeeper-3.4.12.tar.gz"
+    mkdir -p /var/lib/zookeeper
+    cd /var/lib/zookeeper
+    wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz"
+    tar -xvf "zookeeper-3.4.12.tar.gz"
 
-	touch zookeeper-3.4.12/conf/zoo.cfg
+    touch zookeeper-3.4.12/conf/zoo.cfg
 
-	echo "tickTime=2000" >> zookeeper-3.4.12/conf/zoo.cfg
-	echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.12/conf/zoo.cfg
-	echo "clientPort=2181" >> zookeeper-3.4.12/conf/zoo.cfg
-	echo "initLimit=5" >> zookeeper-3.4.12/conf/zoo.cfg
-	echo "syncLimit=2" >> zookeeper-3.4.12/conf/zoo.cfg
-	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg
-	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
+    echo "tickTime=2000" >> zookeeper-3.4.12/conf/zoo.cfg
+    echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.12/conf/zoo.cfg
+    echo "clientPort=2181" >> zookeeper-3.4.12/conf/zoo.cfg
+    echo "initLimit=5" >> zookeeper-3.4.12/conf/zoo.cfg
+    echo "syncLimit=2" >> zookeeper-3.4.12/conf/zoo.cfg
+    # OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg
+    $(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
 
-	#echo $(($1+1)) >> /var/lib/zookeeper/myid
-	echo ${ZOOKEEPER_MYID} >> /var/lib/zookeeper/myid
+    #echo $(($1+1)) >> /var/lib/zookeeper/myid
+    echo ${ZOOKEEPER_MYID} >> /var/lib/zookeeper/myid
 
-	zookeeper-3.4.12/bin/zkServer.sh start
+    zookeeper-3.4.12/bin/zkServer.sh start
 }
 
 # Setup datadisks
 setup_datadisks() {
 
-	MOUNTPOINT="/datadisks/disk1"
+    MOUNTPOINT="/datadisks/disk1"
 
-	# Move database files to the striped disk
-	if [ -L ${KAFKADIR} ];
-	then
-		logger "Symbolic link from ${KAFKADIR} already exists"
-		echo "Symbolic link from ${KAFKADIR} already exists"
-	else
-		logger "Moving  data to the $MOUNTPOINT/kafkadir"
-		echo "Moving Kafka data to the $MOUNTPOINT/kafkadir"
-		mv ${KAFKADIR} $MOUNTPOINT/kafkadir
+    # Move database files to the striped disk
+    if [ -L ${KAFKADIR} ];
+    then
+        logger "Symbolic link from ${KAFKADIR} already exists"
+        echo "Symbolic link from ${KAFKADIR} already exists"
+    else
+        logger "Moving  data to the $MOUNTPOINT/kafkadir"
+        echo "Moving Kafka data to the $MOUNTPOINT/kafkadir"
+        mv ${KAFKADIR} $MOUNTPOINT/kafkadir
 
-		# Create symbolic link so that configuration files continue to use the default folders
-		logger "Create symbolic link from ${KAFKADIR} to $MOUNTPOINT/kafkadir"
-		ln -s $MOUNTPOINT/kafkadir ${KAFKADIR}
-	fi
+        # Create symbolic link so that configuration files continue to use the default folders
+        logger "Create symbolic link from ${KAFKADIR} to $MOUNTPOINT/kafkadir"
+        ln -s $MOUNTPOINT/kafkadir ${KAFKADIR}
+    fi
 }
 
 # Install kafka
 install_kafka()
 {
-	log "kafkalog : install_kafka"
-	log "kafkalog : advertised = ${KAFKA_ADVERTISED}"
+    log "kafkalog : install_kafka"
+    log "kafkalog : advertised = ${KAFKA_ADVERTISED}"
 
-	cd /usr/local
-	name=kafka
-	version=${KF_VERSION}
-	#this Kafka version is prefix same used for all versions
-	kafkaversion=2.11
-	description="Apache Kafka is a distributed publish-subscribe messaging system."
-	url="https://kafka.apache.org/"
-	arch="all"
-	section="misc"
-	license="Apache Software License 2.0"
-	package_version="-1"
-	src_package="kafka_${kafkaversion}-${version}.tgz"
-	download_url=http://archive.apache.org/dist/kafka/${version}/${src_package}
+    cd /usr/local
+    name=kafka
+    version=${KF_VERSION}
+    #this Kafka version is prefix same used for all versions
+    kafkaversion=2.11
+    description="Apache Kafka is a distributed publish-subscribe messaging system."
+    url="https://kafka.apache.org/"
+    arch="all"
+    section="misc"
+    license="Apache Software License 2.0"
+    package_version="-1"
+    src_package="kafka_${kafkaversion}-${version}.tgz"
+    download_url=http://archive.apache.org/dist/kafka/${version}/${src_package}
 
-	rm -rf kafka
-	mkdir -p kafka
-	cd kafka
-	#_ MAIN _#
-	if [[ ! -f "${src_package}" ]]; then
-	  log "kafkalog : printing download url for kafka..."	
-	  log ${download_url}
-	  wget ${download_url}
-	fi
-	tar zxf ${src_package}
-	cd kafka_${kafkaversion}-${version}
-	log "kafkalog : change config"
-	
-	sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties 
-	sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties 
-	sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties 
-	echo "advertised.host.name=${KAFKA_ADVERTISED}" >> config/server.properties 
+    rm -rf kafka
+    mkdir -p kafka
+    cd kafka
+    #_ MAIN _#
+    if [[ ! -f "${src_package}" ]]; then
+      log "kafkalog : printing download url for kafka..."
+      log ${download_url}
+      wget ${download_url}
+    fi
+    tar zxf ${src_package}
+    cd kafka_${kafkaversion}-${version}
+    log "kafkalog : change config"
 
-	log "kafkalog : run kafka"
+    sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
+    sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties
+    sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties
+    echo "advertised.host.name=${KAFKA_ADVERTISED}" >> config/server.properties
 
-	chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
-	/usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
-	log "kafkalog : end of install_kafka"
+    log "kafkalog : run kafka"
+
+    chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
+    /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
+    log "kafkalog : end of install_kafka"
 }
 
 # Primary Install Tasks
@@ -273,15 +270,15 @@ install_java
 
 if [ ${ZOOKEEPER1KAFKA0} -eq "1" ];
 then
-	#
-	#Install zookeeper
-	#-----------------------
-	install_zookeeper
+    #
+    #Install zookeeper
+    #-----------------------
+    install_zookeeper
 else
-	#
-	#Install kafka
-	#-----------------------
-	mkdir ${KAFKADIR}
-	setup_datadisks
-	install_kafka
+    #
+    #Install kafka
+    #-----------------------
+    mkdir ${KAFKADIR}
+    setup_datadisks
+    install_kafka
 fi
