@@ -253,6 +253,8 @@ install_kafka()
 
     if [ ! -z "${KAFKA_ADVERTISED}" ]; then
       echo "advertised.host.name=${KAFKA_ADVERTISED}" >> config/server.properties
+    else
+      echo "advertised.host.name=$(hostname -I)" >> config/server.properties
     fi
 
     log "kafkalog : run kafka"
