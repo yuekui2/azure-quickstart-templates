@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmNamePrefix": {
+            "type": "string",
+            "defaultValue": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name prefix"
+            }
+        },
+        "vmCount": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Virtual machine count"
+            }
+        },
+        "newVmPrivateIpAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.1",
+            "metadata": {
+                "description": "New virtual machine private IP address prefix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        }
+    },
+    "variables": {
+        "scripts": [
+            "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/iot-stack-aux/shared/scripts/kafka-cluster-install.sh"
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/zookeeper')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "scriptCopyLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('bash kafka-cluster-install.sh -z ',' 1 ', ' -m', copyindex(), ' -c ', parameters('vmCount'),' -i ', parameters('newVmPrivateIpAddressPrefix'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
