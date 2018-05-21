@@ -253,6 +253,19 @@ configure_redis()
     cp utils/redis_init_script /etc/init.d/redis-server
     cp ${CURRENT_DIRECTORY}/redis-sentinel-startup.sh /etc/init.d/redis-sentinel
 
+    # config redis
+    # -------------------------------------------------------------------------------
+    # Enable the AOF persistence
+    sed -i "s/^appendonly no$/appendonly yes/g" /etc/redis/redis.conf
+
+    sed -i "s/^protected-mode yes$/protected-mode no/g" /etc/redis/redis.conf
+    sed -i "s/^bind 127.0.0.1$/#bind 127.0.0.1/g" /etc/redis/redis.conf
+
+    # Tune the RDB persistence
+    sed -i "s/^save.*$/# save/g" /etc/redis/redis.conf
+    echo "save 3600 1" >> /etc/redis/redis.conf
+    # -------------------------------------------------------------------------------
+
     # Copy the cluster configuration utility (if exists)
     if [ -f src/redis-trib.rb ]; then
         cp src/redis-trib.rb /usr/local/bin/
