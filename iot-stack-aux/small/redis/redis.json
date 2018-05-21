@@ -9,18 +9,18 @@
                 "description": "Virtual machine name prefix"
             }
         },
-        "zkCount": {
+        "instanceCount": {
             "type": "int",
             "defaultValue": 3,
             "metadata": {
-                "description": "Zookeeper virtual machine count"
+                "description": "Redis instance count, 1 is master and the rest are slaves"
             }
         },
-        "zkVmPrivateIpAddressPrefix": {
+        "redisVmPrivateIpAddressPrefix": {
             "type": "string",
             "defaultValue": "10.0.1.1",
             "metadata": {
-                "description": "Zookeeper virtual machine private IP address prefix"
+                "description": "Redis virtual machine private IP address prefix"
             }
         },
         "templateBaseUrl": {
@@ -29,32 +29,35 @@
                 "description": "ARM template base URL"
             }
         },
-        "kafkaMinVersion": {
+        "redisVersion": {
             "type": "string",
-            "defaultValue": "2.12",
+            "defaultValue": "4.0.9",
             "allowedValues": [
-                "2.11",
-                "2.12"
+                "4.0.9",
+                "3.0.0"
             ],
             "metadata": {
-                "description": "Kafka min version under major version 1.1.0"
+                "description": "Redis version"
             }
         }
     },
     "variables": {
+        "masterCount": 1,
+        "slaveCount": "[sub(parameters('instanceCount'), variables('masterCount'))]",
         "scripts": [
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/scripts/kafka-cluster-install.sh')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/small/redis/redis-sentinel.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/small/redis/redis-sentinel-startup.sh')]"
         ]
     },
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/kafka')]",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/redis')]",
             "apiVersion": "2017-12-01",
             "location": "[resourceGroup().location]",
             "copy": {
                 "name": "scriptCopyLoop",
-                "count": "[parameters('zkCount')]"
+                "count": "[parameters('instanceCount')]"
             },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -63,7 +66,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "[concat('bash kafka-cluster-install.sh -b ',copyindex(),' -c ', parameters('zkCount'),' -i ', parameters('zkVmPrivateIpAddressPrefix'), ' -k ', parameters('kafkaMinVersion'))]"
+                    "commandToExecute": "[concat('bash redis-sentinel.sh -i ',copyindex(), ' -m ', variables('masterCount'), ' -s ', variables('slaveCount'), ' -p ', parameters('redisVmPrivateIpAddressPrefix'), ' -v ', parameters('redisVersion'))]"
                 }
             }
         }
