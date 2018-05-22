@@ -251,7 +251,11 @@ configure_redis()
 
     cp redis.conf /etc/redis/redis.conf
     cp sentinel.conf /etc/redis/sentinel.conf
+
     cp utils/redis_init_script /etc/init.d/redis-server
+    # fix the redis pid on Ubuntu
+    sed -i "s/redis.pid$/redis_6379.pid/g" /etc/init.d/redis-server
+
     cp ${CURRENT_DIRECTORY}/redis-sentinel-startup.sh /etc/init.d/redis-sentinel
 
     # config redis
@@ -348,6 +352,10 @@ start_sentinel()
     /etc/init.d/redis-sentinel start
     log "Redis sentinel daemon was started successfully"
 }
+
+# Step 0
+/etc/init.d/redis-server stop
+/etc/init.d/redis-sentinel stop
 
 # Step1
 tune_system
