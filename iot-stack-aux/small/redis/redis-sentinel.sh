@@ -246,6 +246,9 @@ configure_redis()
     echo "protected-mode no" >> sentinel.conf
 
     # Create all essentials directories and copy files to the correct locations
+    rm -rf /etc/redis
+    rm -rf /var/redis
+
     mkdir /etc/redis
     mkdir /var/redis
 
@@ -285,7 +288,7 @@ configure_redis()
 
     # Create service user and configure for permissions
     useradd -r -s /bin/false redis
-    chown redis:redis /var/run/redis.pid
+    chown redis:redis /var/run/redis_6379.pid
     chmod 755 /etc/init.d/redis-server
     chmod 755 /etc/init.d/redis-sentinel
 
