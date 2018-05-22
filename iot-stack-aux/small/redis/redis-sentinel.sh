@@ -318,6 +318,10 @@ configure_sentinel()
     # Patch the sentinel configuration file with a new master
     sed -i "s/^sentinel monitor.*$/sentinel monitor mymaster ${MASTER_NODE_IP} ${REDIS_PORT} ${MASTER_NODE_COUNT}/g" /etc/redis/sentinel.conf
 
+    echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/redis/sentinel.conf
+    echo "sentinel parallel-syncs mymaster 1" >> /etc/redis/sentinel.conf
+    echo "sentinel failover-timeout mymaster 10000" >> /etc/redis/sentinel.conf
+
     # Make a writable log file
     touch /var/log/redis-sentinel.log
     chown redis:redis /var/log/redis-sentinel.log

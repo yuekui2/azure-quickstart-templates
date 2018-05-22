@@ -86,8 +86,7 @@
         },
         "diskSize": 1023,
         "scripts": [
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/vm.sh')]",
-            "[concat(parameters('templateBaseUrl'), 'shared_scripts/ubuntu/vm-disk-utils-0.1.sh')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/jumpbox.sh')]"
         ],
         "publicIpName": "[concat(parameters('namespace'), 'publicIp')]"
     },
@@ -178,6 +177,22 @@
                             "protocol": "tcp"
                         }
                     ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmNamePrefix'), '/scripts')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "jumpbox.sh"
                 }
             }
         }
