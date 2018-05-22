@@ -243,6 +243,7 @@ configure_redis()
     echo "logfile /var/log/redis-sentinel.log" >> sentinel.conf
     echo "loglevel notice" >> sentinel.conf
     echo "pidfile /var/run/redis-sentinel.pid" >> sentinel.conf
+    echo "protected-mode no" >> sentinel.conf
 
     # Create all essentials directories and copy files to the correct locations
     mkdir /etc/redis
