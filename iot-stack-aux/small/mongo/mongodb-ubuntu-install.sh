@@ -38,14 +38,13 @@ DATA_DISKS="/datadisks"
 DATA_MOUNTPOINT="$DATA_DISKS/disk1"
 MONGODB_DATA="$DATA_MOUNTPOINT/mongodb"
 MONGODB_PORT=27017
-IS_ARBITER=false
-IS_LAST_MEMBER=false
 JOURNAL_ENABLED=true
 ADMIN_USER_NAME=""
 ADMIN_USER_PASSWORD=""
 INSTANCE_COUNT=1
 NODE_IP_PREFIX="10.0.0.1"
 LOGGING_KEY="[logging-key]"
+INSTANCE_INDEX=0
 
 help()
 {
@@ -59,8 +58,7 @@ help()
     echo "        -p System administrator's password"
     echo "        -x Member node IP prefix"
     echo "        -n Number of member nodes"
-    echo "        -a (arbiter indicator)"
-    echo "        -l (last member indicator)"
+    echo "        -c Instance index "
 }
 
 log()
@@ -80,7 +78,7 @@ then
 fi
 
 # Parse script parameters
-while getopts :i:b:r:k:u:p:x:n:alh optname; do
+while getopts :c:i:b:r:k:u:p:x:n:h optname; do
 
     # Log input parameters (except the admin password) to facilitate troubleshooting
     if [ ! "$optname" == "p" ] && [ ! "$optname" == "k" ]; then
@@ -88,6 +86,9 @@ while getopts :i:b:r:k:u:p:x:n:alh optname; do
     fi
 
     case $optname in
+    c) # Instance index
+        INSTANCE_INDEX=${OPTARG}
+        ;;
     i) # Installation package location
         PACKAGE_URL=${OPTARG}
         ;;
@@ -111,13 +112,6 @@ while getopts :i:b:r:k:u:p:x:n:alh optname; do
         ;;
     n) # Number of instances
         INSTANCE_COUNT=${OPTARG}
-        ;;
-    a) # Arbiter indicator
-        IS_ARBITER=true
-        JOURNAL_ENABLED=false
-        ;;
-    l) # Last member indicator
-        IS_LAST_MEMBER=true
         ;;
     h)  # Helpful hints
         help
@@ -227,7 +221,8 @@ configure_replicaset()
     start_mongodb
 
     # Initiate a replica set (only run this section on the very last node)
-    if [ "$IS_LAST_MEMBER" = true ]; then
+    # The 2nd last is considered as the last member
+    if [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 2 )) ]; then
         # Log a message to facilitate troubleshooting
         log "Initiating a replica set $REPLICA_SET_NAME with $INSTANCE_COUNT members"
 
@@ -249,7 +244,8 @@ configure_replicaset()
     fi
 
     # Register an arbiter node with the replica set
-    if [ "$IS_ARBITER" = true ]; then
+    # The last is considered as the arbiter.
+    if [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 1 )) ]; then
 
         # Work out the IP address of the last member node where we initiated a replica set
         let "PRIMARY_MEMBER_INDEX=$INSTANCE_COUNT-1"
