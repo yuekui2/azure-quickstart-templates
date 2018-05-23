@@ -1,0 +1,88 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Mongo administrator user name"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Mongo administrator password"
+            }
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "defaultValue": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name prefix"
+            }
+        },
+        "instanceCount": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Redis instance count, 1 is master and the rest are slaves"
+            }
+        },
+        "vmPrivateIpAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.1",
+            "metadata": {
+                "description": "Redis virtual machine private IP address prefix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        },
+        "replicaSetName": {
+            "type": "string",
+            "defaultValue": "rs0",
+            "metadata": {
+                "description": "The name of the MongoDB replica set"
+            }
+        },
+        "replicaSetKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The shared secret key for the MongoDB replica set"
+            }
+        }
+    },
+    "variables": {
+        "installerBaseUrl": "http://repo.mongodb.org/apt/ubuntu",
+        "installerPackages": "mongodb-org",
+        "scripts": [
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/small/mongo/mongodb-ubuntu-install.sh')]"
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmNamePrefix'), copyindex(), '/mongodb')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "scriptCopyLoop",
+                "count": "[parameters('instanceCount')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('bash mongodb-ubuntu-install.sh -i ', variables('installerBaseUrl'), ' -b ', variables('installerPackages'), ' -r ', parameters('replicaSetName'), ' -k ', parameters('replicaSetKey'), ' -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -x ', parameters('vmPrivateIpAddressPrefix'), ' -n ', parameters('instanceCount'), ' -c ', copyindex())]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
