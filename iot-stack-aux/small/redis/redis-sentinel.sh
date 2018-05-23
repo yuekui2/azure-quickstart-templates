@@ -344,6 +344,9 @@ configure_sentinel()
 #############################################################################
 start_redis()
 {
+    # cleanup previous run
+    rm /var/run/redis_6379.pid
+
     # Start the Redis daemon
     /etc/init.d/redis-server start
     log "Redis daemon was started successfully"
@@ -351,6 +354,9 @@ start_redis()
 
 start_sentinel()
 {
+    # cleanup previous run
+    rm /var/run/redis-sentinel.pid
+
     # Start the Redis sentinel daemon
     /etc/init.d/redis-sentinel start
     log "Redis sentinel daemon was started successfully"
