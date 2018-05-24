@@ -171,8 +171,9 @@ install_mongodb()
     log "Downloading MongoDB package $PACKAGE_NAME from $PACKAGE_URL"
 
     # Configure mongodb.list file with the correct location
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-    echo "deb ${PACKAGE_URL} "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+    # TODO: make key and version configurable
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 91FA4AD5
+    echo "deb ${PACKAGE_URL} "$(lsb_release -sc)"/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 
     # Install updates
     apt-get -y update
@@ -186,17 +187,10 @@ install_mongodb()
     log "Installing MongoDB package $PACKAGE_NAME"
     apt-get -y install $PACKAGE_NAME
 
+    #systemctl enable mongod
+
     # Stop Mongod as it may be auto-started during the above step (which is not desirable)
     stop_mongodb
-}
-
-#############################################################################
-configure_datadisks()
-{
-    # Stripe all of the data
-    log "Formatting and configuring the data disks"
-
-    bash ./vm-disk-utils-0.1.sh -b $DATA_DISKS -s
 }
 
 #############################################################################
@@ -301,14 +295,12 @@ EOF
     # Fixing an issue where the mongod will not start after reboot where when /run is tmpfs the /var/run/mongodb directory will be deleted at reboot
     # After reboot, mongod wouldn't start since the pidFilePath is defined as /var/run/mongodb/mongod.pid in the configuration and path doesn't exist
     sed -i "s|pre-start script|pre-start script\n  if [ ! -d /var/run/mongodb ]; then\n    mkdir -p /var/run/mongodb \&\& touch /var/run/mongodb/mongod.pid \&\& chmod 777 /var/run/mongodb/mongod.pid\n  fi\n|" /etc/init/mongod.conf
-
-
 }
 
 start_mongodb()
 {
     log "Starting MongoDB daemon processes"
-    service mongod start
+    systemctl start mongod
 
     # Wait for MongoDB daemon to start and initialize for the first time (this may take up to a minute or so)
     while ! timeout 1 bash -c "echo > /dev/tcp/localhost/$MONGODB_PORT"; do sleep 10; done
@@ -322,7 +314,7 @@ stop_mongodb()
     if [ ! -z "$MONGOPID" ]; then
         log "Stopping MongoDB daemon processes (PID $MONGOPID)"
 
-        kill -15 $MONGOPID
+        systemctl stop mongod
     fi
 
     # Important not to attempt to start the daemon immediately after it was stopped as unclean shutdown may be wrongly perceived
@@ -335,9 +327,6 @@ configure_db_users()
     log "Creating a system administrator"
     mongo master --host 127.0.0.1 --eval "db.createUser({user: '${ADMIN_USER_NAME}', pwd: '${ADMIN_USER_PASSWORD}', roles:[{ role: 'userAdminAnyDatabase', db: 'admin' }, { role: 'clusterAdmin', db: 'admin' }, { role: 'readWriteAnyDatabase', db: 'admin' }, { role: 'dbAdminAnyDatabase', db: 'admin' } ]})"
 }
-
-# Step 1
-configure_datadisks
 
 # Step 2
 tune_memory
