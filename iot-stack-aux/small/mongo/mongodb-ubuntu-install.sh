@@ -271,9 +271,10 @@ configure_mongodb()
     chmod 755 "$MONGODB_DATA"
 
     mkdir /var/run/mongodb
-    chown -R mongodb:mongodb /var/run/mongodb
     touch /var/run/mongodb/mongod.pid
     chmod 777 /var/run/mongodb/mongod.pid
+    # Set permission so that fork process can access
+    chown -R mongodb:mongodb /var/run/mongodb
 
     tee /etc/mongod.conf > /dev/null <<EOF
 systemLog:
