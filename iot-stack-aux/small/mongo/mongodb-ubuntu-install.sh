@@ -257,6 +257,8 @@ configure_mongodb()
 {
     log "Configuring MongoDB"
 
+    rm -rf "$MONGODB_DATA"
+
     mkdir -p "$MONGODB_DATA"
     mkdir "$MONGODB_DATA/log"
     mkdir "$MONGODB_DATA/db"
