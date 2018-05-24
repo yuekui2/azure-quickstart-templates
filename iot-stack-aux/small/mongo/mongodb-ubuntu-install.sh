@@ -286,6 +286,7 @@ processManagement:
     fork: true
     pidFilePath: "/var/run/mongodb/mongod.pid"
 net:
+    bindIpAll: true
     port: $MONGODB_PORT
 security:
     #keyFile: ""
