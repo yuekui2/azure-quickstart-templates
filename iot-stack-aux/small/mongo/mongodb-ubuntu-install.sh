@@ -168,6 +168,9 @@ tune_system()
 #############################################################################
 install_mongodb()
 {
+    # Cleanup first
+    apt-get -y purge $PACKAGE_NAME
+
     log "Downloading MongoDB package $PACKAGE_NAME from $PACKAGE_URL"
 
     # Configure mongodb.list file with the correct location
@@ -268,6 +271,7 @@ configure_mongodb()
     chmod 755 "$MONGODB_DATA"
 
     mkdir /var/run/mongodb
+    chown -R mongodb:mongodb /var/run/mongodb
     touch /var/run/mongodb/mongod.pid
     chmod 777 /var/run/mongodb/mongod.pid
 
