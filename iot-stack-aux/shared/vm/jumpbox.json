@@ -192,7 +192,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "jumpbox.sh"
+                    "commandToExecute": "bash jumpbox.sh"
                 }
             }
         }
