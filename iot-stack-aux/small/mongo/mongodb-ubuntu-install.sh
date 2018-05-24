@@ -310,7 +310,18 @@ start_mongodb()
     systemctl start mongod
 
     # Wait for MongoDB daemon to start and initialize for the first time (this may take up to a minute or so)
-    while ! timeout 1 bash -c "echo > /dev/tcp/localhost/$MONGODB_PORT"; do sleep 10; done
+    for i in {1..10}
+    do
+        if timeout 1 bash -c "echo > /dev/tcp/localhost/$MONGODB_PORT"; then
+            echo "MongoDB daemon started successfully"
+            return 0
+        else
+            sleep 10
+        fi
+    done
+
+    echo "MongoDB daemon failed to start"
+    exit 1
 }
 
 stop_mongodb()
