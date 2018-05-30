@@ -352,6 +352,11 @@ configure_db_users()
 {
     # Create a system administrator
     log "Creating a system administrator"
+
+    # The connection string for using the admin user below: "mongodb://${ADMIN_USER_NAME}:${ADMIN_USER_PASSWORD}@ip?authSource=master"
+    # NOTE:
+    #   1) the authSource is master
+    #   2) the special characters in the password need to be uri-escapted, e.g., replace @ with %40
     mongo master --host 127.0.0.1 --eval "db.createUser({user: '${ADMIN_USER_NAME}', pwd: '${ADMIN_USER_PASSWORD}', roles:[{ role: 'userAdminAnyDatabase', db: 'admin' }, { role: 'clusterAdmin', db: 'admin' }, { role: 'readWriteAnyDatabase', db: 'admin' }, { role: 'dbAdminAnyDatabase', db: 'admin' } ]})"
 }
 
