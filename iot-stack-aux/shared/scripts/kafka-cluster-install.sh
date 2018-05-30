@@ -50,7 +50,7 @@ help()
 log()
 {
     # If you want to enable this logging add a un-comment the line below and add your account key
-    curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
+    #curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
     echo "$1"
 }
 
@@ -73,7 +73,7 @@ else
   echo "${HOSTNAME} not found in /etc/hosts"
   # Append it to the hsots file if not there
   echo "127.0.0.1 $(hostname)" >> /etc/hosts
-  log "hostname ${HOSTNAME} added to /etc/hosts"
+  log "Hostname ${HOSTNAME} added to /etc/hosts"
 fi
 
 #Script Parameters
@@ -130,7 +130,7 @@ done
 # Install Oracle Java
 install_java()
 {
-    log "Installing Java kui"
+    log "Installing Java"
     #add-apt-repository -y ppa:webupd8team/java
     apt-get -y update
     #echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
@@ -169,8 +169,7 @@ expand_ip_range() {
 # Install Zookeeper - can expose zookeeper version
 install_zookeeper()
 {
-    log "zklog : install_zookeeper"
-    log "zklog : myid = ${ZOOKEEPER_MYID}"
+    log "Installing Zookeeper with ID ${ZOOKEEPER_MYID}"
 
     mkdir -p /var/lib/zookeeper
     cd /var/lib/zookeeper
@@ -217,8 +216,7 @@ setup_datadisks() {
 # Install kafka
 install_kafka()
 {
-    log "kafkalog : install_kafka"
-    log "kafkalog : advertised = ${KAFKA_ADVERTISED}"
+    log "Installing Kafka"
 
     cd /usr/local
     name=kafka
@@ -239,13 +237,11 @@ install_kafka()
     cd kafka
     #_ MAIN _#
     if [[ ! -f "${src_package}" ]]; then
-      log "kafkalog : printing download url for kafka..."
-      log ${download_url}
+      log "Download Kafka from ${download_url}"
       wget ${download_url}
     fi
     tar zxf ${src_package}
     cd kafka_${min_ver}-${maj_ver}
-    log "kafkalog : change config"
 
     sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
     sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties
@@ -259,11 +255,8 @@ install_kafka()
       echo "advertised.host.name=$(hostname -I)" >> config/server.properties
     fi
 
-    log "kafkalog : run kafka"
-
     chmod u+x /usr/local/kafka/kafka_${min_ver}-${maj_ver}/bin/kafka-server-start.sh
     /usr/local/kafka/kafka_${min_ver}-${maj_ver}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${min_ver}-${maj_ver}/config/server.properties &
-    log "kafkalog : end of install_kafka"
 }
 
 # Primary Install Tasks
