@@ -228,6 +228,7 @@
                             "lun": 0,
                             "name": "[concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1')]",
                             "createOption": "attach",
+                            "caching" :"ReadWrite",
                             "managedDisk": {
                                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmNamePrefix'), copyindex(), '-datadisk1'))]"
                             }

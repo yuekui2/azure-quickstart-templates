@@ -29,6 +29,14 @@
 # runtime parameters declared from within the corresponding ARM template.
 #--------------------------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------------------------
+# TODO
+# According to mongodb documentation,
+# https://docs.mongodb.com/manual/administration/production-notes/#windows-azure-production-notes,
+# 1. net.ipv4.tcp_keepalive_time=120
+# 2. Premium storage with Host Cache Preference READ/WRITE.
+#--------------------------------------------------------------------------------------------------
+
 PACKAGE_URL=http://repo.mongodb.org/apt/ubuntu
 PACKAGE_NAME=mongodb-org
 REPLICA_SET_KEY_DATA=""
