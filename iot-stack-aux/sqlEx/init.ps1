@@ -6,8 +6,8 @@ New-Partition -AssignDriveLetter -UseMaximumSize | `
 Format-Volume -FileSystem NTFS -NewFileSystemLabel "datadisk" -Confirm:$false
 
 # Create database folders
-$dataPath = "F:\SQL5\Data"
-$logPath = "F:\SQL5\Logs"
+$dataPath = "F:\SQL\Data"
+$logPath = "F:\SQL\Logs"
 $paths = $dataPath, $logPath
 Foreach ($path in $paths)
 {
