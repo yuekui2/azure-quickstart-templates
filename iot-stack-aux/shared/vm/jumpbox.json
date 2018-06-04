@@ -185,6 +185,9 @@
             "name": "[concat(parameters('vmNamePrefix'), '/scripts')]",
             "apiVersion": "2017-12-01",
             "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmNamePrefix'))]"
+            ],
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",
