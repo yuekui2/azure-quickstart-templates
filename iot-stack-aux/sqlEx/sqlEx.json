@@ -81,7 +81,9 @@
         "nicName": "[concat(parameters('namespace'), 'Nic')]",
         "diskSize": 1023,
         "scripts": [
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/initDisk.ps1')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/init.ps1')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/setDB.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/createTestDB.sql')]"
         ]
     },
     "resources": [
@@ -297,7 +299,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file initDisk.ps1"
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file init.ps1"
                 }
             }
         }
