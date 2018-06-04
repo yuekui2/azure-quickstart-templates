@@ -8,7 +8,8 @@ Format-Volume -FileSystem NTFS -NewFileSystemLabel "datadisk" -Confirm:$false
 # Create database folders
 $dataPath = "F:\SQL\Data"
 $logPath = "F:\SQL\Logs"
-$paths = $dataPath, $logPath
+$backupPath = "F:\SQL\Backups"
+$paths = $dataPath, $logPath, $backupPath
 Foreach ($path in $paths)
 {
     If(!(test-path $path))
