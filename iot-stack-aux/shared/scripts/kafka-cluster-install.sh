@@ -71,7 +71,7 @@ then
   echo "${HOSTNAME}found in /etc/hosts"
 else
   echo "${HOSTNAME} not found in /etc/hosts"
-  # Append it to the hsots file if not there
+  # Append it to the hosts file if not there
   echo "127.0.0.1 $(hostname)" >> /etc/hosts
   log "Hostname ${HOSTNAME} added to /etc/hosts"
 fi
@@ -81,6 +81,7 @@ KF_VERSION=""
 BROKER_ID=0
 ZOOKEEPER1KAFKA0="0"
 ZOOKEEPER_MYID=0
+ZOOKEEPER_VER_STR="zookeeper-3.4.12"
 
 ZOOKEEPER_IP_PREFIX=""
 INSTANCE_COUNT=1
@@ -127,15 +128,11 @@ while getopts :m:n:k:b:z:i:c:p:h optname; do
   esac
 done
 
-# Install Oracle Java
+# Install Java (OpenJDK)
 install_java()
 {
     log "Installing Java"
-    #add-apt-repository -y ppa:webupd8team/java
     apt-get -y update
-    #echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-    #echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-    #apt-get -y install oracle-java7-installer
     apt-get -y install default-jre
 }
 
@@ -146,7 +143,7 @@ expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
     for (( n=0; n<${HOST_IPS[1]}; n++))
     do
-        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg
+        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
     done
 }
 
@@ -166,30 +163,29 @@ expand_ip_range() {
     echo "${EXPAND_STATICIP_RANGE_RESULTS[@]}"
 }
 
-# Install Zookeeper - can expose zookeeper version
+# Install Zookeeper
 install_zookeeper()
 {
     log "Installing Zookeeper with ID ${ZOOKEEPER_MYID}"
 
     mkdir -p /var/lib/zookeeper
     cd /var/lib/zookeeper
-    wget "http://apache.cs.utah.edu/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz"
-    tar -xvf "zookeeper-3.4.12.tar.gz"
+    wget "http://apache.cs.utah.edu/zookeeper/${ZOOKEEPER_VER_STR}/${ZOOKEEPER_VER_STR}.tar.gz"
+    tar -xvf "${ZOOKEEPER_VER_STR}.tar.gz"
 
-    touch zookeeper-3.4.12/conf/zoo.cfg
+    touch ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
 
-    echo "tickTime=2000" >> zookeeper-3.4.12/conf/zoo.cfg
-    echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.12/conf/zoo.cfg
-    echo "clientPort=2181" >> zookeeper-3.4.12/conf/zoo.cfg
-    echo "initLimit=5" >> zookeeper-3.4.12/conf/zoo.cfg
-    echo "syncLimit=2" >> zookeeper-3.4.12/conf/zoo.cfg
-    # OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.12/conf/zoo.cfg
+    echo "tickTime=2000" >> ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
+    echo "dataDir=/var/lib/zookeeper" >> ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
+    echo "clientPort=2181" >> ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
+    echo "initLimit=5" >> ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
+    echo "syncLimit=2" >> ${ZOOKEEPER_VER_STR}/conf/zoo.cfg
+
     $(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
 
-    #echo $(($1+1)) >> /var/lib/zookeeper/myid
     echo ${ZOOKEEPER_MYID} >> /var/lib/zookeeper/myid
 
-    zookeeper-3.4.12/bin/zkServer.sh start
+    ${ZOOKEEPER_VER_STR}/bin/zkServer.sh start
 }
 
 # Setup datadisks
@@ -261,11 +257,7 @@ install_kafka()
 
 # Primary Install Tasks
 #########################
-#NOTE: These first three could be changed to run in parallel
-#      Future enhancement - (export the functions and use background/wait to run in parallel)
 
-#Install Oracle Java
-#------------------------
 install_java
 
 if [ ${ZOOKEEPER1KAFKA0} -eq "1" ];
