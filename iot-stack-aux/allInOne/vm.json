@@ -26,6 +26,12 @@
       "metadata": {
         "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
       }
+    },
+    "templateBaseUrl": {
+        "type": "string",
+        "metadata": {
+            "description": "ARM template base URL"
+        }
     }
   },
   "variables": {
@@ -38,7 +44,10 @@
     "publicIPAddressName": "myPublicIP",
     "vmName": "SimpleWinVM",
     "virtualNetworkName": "MyVNET",
-    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
+    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+    "scripts": [
+        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/init.ps1')]"
+    ]
   },
   "resources": [
     {
@@ -195,6 +204,25 @@
           }
         }
       }
+    },
+    {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(variables('vmName'), '/scripts')]",
+        "apiVersion": "2017-12-01",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        ],
+        "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+                "fileUris": "[variables('scripts')]",
+                "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file init.ps1"
+            }
+        }
     }
   ],
   "outputs": {

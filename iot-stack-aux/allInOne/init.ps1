@@ -1,6 +1,6 @@
 invoke-webrequest -UseBasicparsing -Outfile cosmosdb-emulator.msi https://aka.ms/cosmosdb-emulator
 & .\cosmosdb-emulator.msi /quiet
-& "C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"
+& 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
 
 invoke-webrequest -UseBasicparsing -Outfile docker_ce_win.exe https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe
 & .\docker_ce_win.exe install --quiet
