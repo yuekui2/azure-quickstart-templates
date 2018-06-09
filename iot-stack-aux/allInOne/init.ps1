@@ -1,7 +1,7 @@
-param([string]$username = "u", [securestring]$securePassword = "p")
+param([string]$username = "u", [securestring]$pwd = "p")
 
+$securePassword = $pwd | ConvertTo-SecureString -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential $username, $securePassword
-Start-Process Notepad.exe
 
 invoke-webrequest -UseBasicparsing -Outfile cosmosdb-emulator.msi https://aka.ms/cosmosdb-emulator
 Start-Process .\cosmosdb-emulator.msi -ArgumentList "/quiet" -Wait -Credential $credential
