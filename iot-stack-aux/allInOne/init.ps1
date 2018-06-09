@@ -8,7 +8,7 @@ invoke-webrequest -UseBasicparsing -Outfile docker_ce_win.exe https://download.d
 # Use "-NoRestart" to avoid restart pop up.
 Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName Microsoft-Hyper-V, Containers -All
 
-$trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
-Register-ScheduledJob -Trigger $trigger -FilePath .\runEmulatorAndContainers.ps1 -Name EmulatorAndContainers
+#$trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
+#Register-ScheduledJob -Trigger $trigger -FilePath .\runEmulatorAndContainers.ps1 -Name EmulatorAndContainers
 
 Restart-Computer -Force
