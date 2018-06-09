@@ -1,4 +1,4 @@
-& 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
+#& 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
 
 DO
 {
