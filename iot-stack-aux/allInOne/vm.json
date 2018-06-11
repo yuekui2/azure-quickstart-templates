@@ -47,8 +47,7 @@
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "scripts": [
         "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/init.ps1')]",
-        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/runEmulatorAndContainers.ps1')]",
-        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/entry.ps1')]"
+        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/runEmulatorAndContainers.ps1')]"
     ]
   },
   "resources": [
@@ -222,7 +221,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
                 "fileUris": "[variables('scripts')]",
-                "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file entry.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'))]"
+                "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file init.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'))]"
             }
         }
     }
