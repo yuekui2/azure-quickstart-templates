@@ -12,12 +12,12 @@ Start-Process .\docker_ce_win.exe -ArgumentList "install --quiet" -Wait
 # Use "-NoRestart" to avoid restart pop up.
 Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName Microsoft-Hyper-V, Containers -All
 
-#Import-Module ServerManager
-#Add-WindowsFeature RSAT-AD-PowerShell
-#import-module activedirectory
 Add-LocalGroupMember -Group docker-users -Member $username
 
 $action = {
+    Start-Process "C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"
+    Start-Process "C:\Program Files\Docker\Docker\Docker for Windows.exe"
+
     DO
     {
         sleep 5
@@ -31,7 +31,6 @@ $action = {
 }
 
 $trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
-#Register-ScheduledJob -Trigger $trigger -FilePath .\runEmulatorAndContainers.ps1 -Name EmulatorAndContainers -Credential $credential
 Register-ScheduledJob -Trigger $trigger -ScriptBlock $action -Name EmulatorAndContainers -Credential $credential
 
 Restart-Computer -Force
