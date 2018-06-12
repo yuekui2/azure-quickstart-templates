@@ -1,5 +1,6 @@
 param([string]$username = "u", [string]$pwd = "p")
 
+$pwd = 'tmpPwd'
 $securePassword = $pwd | ConvertTo-SecureString -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential $username, $securePassword
 
