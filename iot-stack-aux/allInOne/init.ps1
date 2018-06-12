@@ -9,13 +9,13 @@ Start-Process .\docker_ce_win.exe -ArgumentList "install --quiet" -Wait
 # Use "-NoRestart" to avoid restart pop up.
 Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName Microsoft-Hyper-V, Containers -All
 
-Import-Module ServerManager
-Add-WindowsFeature RSAT-AD-PowerShell
-import-module activedirectory
+#Import-Module ServerManager
+#Add-WindowsFeature RSAT-AD-PowerShell
+#import-module activedirectory
 Add-LocalGroupMember -Group docker-users -Member $username
 
 
-#$trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
-#Register-ScheduledJob -Trigger $trigger -FilePath .\runEmulatorAndContainers.ps1 -Name EmulatorAndContainers
+$trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
+Register-ScheduledJob -Trigger $trigger -FilePath .\runEmulatorAndContainers.ps1 -Name EmulatorAndContainers
 
 Restart-Computer -Force
