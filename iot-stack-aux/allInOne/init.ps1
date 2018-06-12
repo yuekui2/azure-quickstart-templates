@@ -15,8 +15,8 @@ Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName Microsoft-Hyper-V,
 Add-LocalGroupMember -Group docker-users -Member $username
 
 $action = {
-    #Start-Process 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
-    #Start-Process 'C:\Program Files\Docker\Docker\Docker for Windows.exe'
+    Start-Process 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
+    Start-Process 'C:\Program Files\Docker\Docker\Docker for Windows.exe'
 
     DO
     {
@@ -31,6 +31,6 @@ $action = {
 }
 
 $trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
-Register-ScheduledJob -Trigger $trigger -ScriptBlock $action -Name EmulatorAndContainers -Credential $credential
+Register-ScheduledJob -Trigger $trigger -ScriptBlock $action -Name EmulatorAndContainers
 
 Restart-Computer -Force
