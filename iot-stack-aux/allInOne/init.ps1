@@ -15,8 +15,8 @@ Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName Microsoft-Hyper-V,
 Add-LocalGroupMember -Group docker-users -Member $username
 
 $action = {
-    Start-Process "C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"
-    Start-Process "C:\Program Files\Docker\Docker\Docker for Windows.exe"
+    Start-Process 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
+    Start-Process 'C:\Program Files\Docker\Docker\Docker for Windows.exe'
 
     DO
     {
