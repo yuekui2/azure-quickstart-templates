@@ -46,8 +46,7 @@
     "virtualNetworkName": "MyVNET",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "scripts": [
-        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/init.ps1')]",
-        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/runEmulatorAndContainers.ps1')]"
+        "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/allInOne/init.ps1')]"
     ]
   },
   "resources": [
