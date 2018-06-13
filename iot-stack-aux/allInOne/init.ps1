@@ -28,6 +28,7 @@ $action = {
     docker rm iot-stack-redis
     docker rmi redis
     docker run --name iot-stack-redis -p 6379:6379 -d redis
+
     docker run -d -p 8080:8080 trinitronx/python-simplehttpserver
 }
 
@@ -69,5 +70,7 @@ Retry-Command {
     $trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
     Register-ScheduledJob -Trigger $trigger -ScriptBlock $action -Name EmulatorAndContainers -Credential $credential -ErrorAction Stop
 } -Maximum 20
+
+New-NetFirewallRule -DisplayName "Allow http 8080" -Direction Inbound -Protocol TCP -LocalPort 8080
 
 Restart-Computer -Force
