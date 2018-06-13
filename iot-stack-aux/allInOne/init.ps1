@@ -1,6 +1,5 @@
 param([string]$username = "u", [string]$pwd = "p")
 
-$pwd = 'tmpPwd@312'
 $securePassword = $pwd | ConvertTo-SecureString -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential $username, $securePassword
 
@@ -16,7 +15,7 @@ Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName Microsoft-Hyper-V,
 Add-LocalGroupMember -Group docker-users -Member $username
 
 $action = {
-    Start-Process 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe'
+    Start-Process 'C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe' -ArgumentList "/NoUI"
     Start-Process 'C:\Program Files\Docker\Docker\Docker for Windows.exe'
 
     DO

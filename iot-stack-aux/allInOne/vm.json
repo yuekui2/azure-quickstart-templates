@@ -14,6 +14,12 @@
         "description": "Password for the Virtual Machine."
       }
     },
+    "secret": {
+        "type": "string",
+        "metadata": {
+          "description": "Secret for the Virtual Machine."
+        }
+      },
     "dnsLabelPrefix": {
       "type": "string",
       "metadata": {
@@ -220,7 +226,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
                 "fileUris": "[variables('scripts')]",
-                "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file init.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'))]"
+                "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file init.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('secret'))]"
             }
         }
     }
