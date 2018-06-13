@@ -28,6 +28,7 @@ $action = {
     docker rm iot-stack-redis
     docker rmi redis
     docker run --name iot-stack-redis -p 6379:6379 -d redis
+    docker run -d -v /tmp/:/var/www:ro -p 8080:8080 trinitronx/python-simplehttpserver
 }
 
 $trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
