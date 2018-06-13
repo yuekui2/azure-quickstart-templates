@@ -75,6 +75,7 @@ Retry-Command {
 } -Maximum 20
 
 New-NetFirewallRule -DisplayName "Allow http 8080" -Direction Inbound -Protocol TCP -LocalPort 8080
+New-NetFirewallRule -DisplayName "Allow http 6379" -Direction Inbound -Protocol TCP -LocalPort 6379
 
 New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name AutoAdminLogon -Value 1
 New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name DefaultUserName -Value $username
