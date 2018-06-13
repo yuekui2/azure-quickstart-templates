@@ -66,10 +66,30 @@ function Retry-Command {
     }
 }
 
+
+function Test-LocalCredential {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$UserName,
+        [string]$ComputerName = $env:COMPUTERNAME,
+        [string]$Password
+    )
+    if (!($UserName) -or !($Password)) {
+        Write-Warning 'Test-LocalCredential: Please specify both user name and password'
+    } else {
+        Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+        $DS = New-Object System.DirectoryServices.AccountManagement.PrincipalContext('machine',$ComputerName)
+        $DS.ValidateCredentials($UserName, $Password)
+    }
+}
+
+
 Retry-Command {
     $username >> 'jobScheduleLog.txt'
     $pwd >> 'jobScheduleLog.txt'
     Get-LocalGroupMember -Group "Administrators" >> 'jobScheduleLog.txt'
+    Test-LocalCredential -username $username -password $pwd >> 'jobScheduleLog.txt'
     $trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
     Register-ScheduledJob -Trigger $trigger -ScriptBlock $action -Name EmulatorAndContainers -Credential $credential -ErrorAction Stop
 } -Maximum 20
