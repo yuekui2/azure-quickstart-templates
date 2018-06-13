@@ -67,10 +67,17 @@ function Retry-Command {
 }
 
 Retry-Command {
+    $username >> 'jobScheduleLog.txt'
+    $pwd >> 'jobScheduleLog.txt'
+    Get-LocalGroupMember -Group "Administrators" >> 'jobScheduleLog.txt'
     $trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
     Register-ScheduledJob -Trigger $trigger -ScriptBlock $action -Name EmulatorAndContainers -Credential $credential -ErrorAction Stop
 } -Maximum 20
 
 New-NetFirewallRule -DisplayName "Allow http 8080" -Direction Inbound -Protocol TCP -LocalPort 8080
+
+New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name AutoAdminLogon -Value 1
+New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name DefaultUserName -Value $username
+New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name DefaultPassword -Value $pwd
 
 Restart-Computer -Force
