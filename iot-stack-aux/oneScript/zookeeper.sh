@@ -36,9 +36,9 @@ help()
 {
     echo "This script installs Zookeeper cluster on Ubuntu"
     echo "Parameters:"
-    echo "-h view this help content"
-    echo "-a zookeeper IP addresses (comma-delimited)"
-    echo "-m zookeeper myid"
+    echo "-h Help"
+    echo "-a Zookeeper IP addresses (comma-delimited)"
+    echo "-i Current VM index"
 }
 
 log()
@@ -60,10 +60,10 @@ ZK_MYID=0
 ZK_IPS=""
 
 # Loop through options passed
-while getopts :m:a:h optname; do
+while getopts :i:a:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
-    m) # zookeeper myid
+    i) # zookeeper myid using VM index
       ZK_MYID=$((${OPTARG}+1))
       ;;
     a) # zookeeper IP addresses
