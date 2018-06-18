@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmNames": {
+            "type": "string",
+            "metadata": {
+                "description": "Comma-delimited virtual machine names"
+            }
+        },
+        "vmIPs": {
+            "type": "string",
+            "metadata": {
+                "description": "Comma-delimited virtual machine private IP addresses"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        },
+        "tshirtSize": {
+          "type": "string",
+          "defaultValue": "Test",
+          "allowedValues": [
+            "Test",
+            "ProdStandard",
+            "ProdLarge"
+          ],
+          "metadata": {
+            "description": "T-shirt size of the IoT hub"
+          }
+        }
+    },
+    "variables": {
+        "tshirtSizeTest": {
+            "zkVmIndexes": "0",
+            "kafkaVmIndexes": "0",
+            "redisVmIndexes": "0",
+            "mongoVmIndexes": "0"
+        },
+        "tshirtSizeProdStandard": {
+            "zkVmIndexes": "0,1,2",
+            "kafkaVmIndexes": "0,1,2",
+            "redisVmIndexes": "0,1,2",
+            "mongoVmIndexes": "0,1,2"
+        },
+        "tshirtSizeProdLarge": {
+            "zkVmIndexes": "0,1,2",
+            "kafkaVmIndexes": "3,4,5",
+            "redisVmIndexes": "0,1,2",
+            "mongoVmIndexes": "0,1,2"
+        },
+        "tshirtSize": "[variables(concat('tshirtSize', parameters('tshirtSize')))]",
+        "vms": "[split(parameters('vmNames'), ',')]",
+        "vmCount": "[length(variables('vms'))]",
+        "scripts": [
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/entry.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/zookeeper.sh')]"
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[variables('vms')[copyindex()]]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "scriptCopyLoop",
+                "count": "[variables('vmCount')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes)]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
