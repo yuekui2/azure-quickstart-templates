@@ -63,7 +63,7 @@
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[variables('vms')[copyindex()]]",
+            "name": "[concat(variables('vms')[copyindex()], '/scripts')]",
             "apiVersion": "2017-12-01",
             "location": "[resourceGroup().location]",
             "copy": {
