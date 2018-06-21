@@ -10,12 +10,8 @@ namespace RedisConnection
 
         static RedisStore()
         {
-            var configurationOptions = new ConfigurationOptions
-            {
-                EndPoints = { ConfigurationManager.AppSettings["redis.connection"] }
-            };
-
-            LazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(configurationOptions));
+            LazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(
+                ConfigurationManager.AppSettings["redis.connection"]));
         }
 
         public static ConnectionMultiplexer Connection => LazyConnection.Value;
