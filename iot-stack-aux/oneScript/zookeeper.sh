@@ -36,9 +36,9 @@ help()
 {
     echo "This script installs Zookeeper cluster on Ubuntu"
     echo "Parameters:"
-    echo "-h Help"
     echo "-a Zookeeper IP addresses (comma-delimited)"
     echo "-i Current VM index"
+    echo "-h Help"
 }
 
 log()
