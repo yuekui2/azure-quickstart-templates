@@ -105,6 +105,7 @@ if [ $? -eq 0 ]; then
     zk_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${ZK_VM_INDEXES[@]})")
     echo "zk_ips := ${zk_ips}"
     /bin/bash ./zookeeper.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${CUR_VM_INDEX}"
+    /bin/bash ./kafka.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${CUR_VM_INDEX}"
 fi
 
 contain_index "${CUR_VM_INDEX}" "${KAFKA_VM_INDEXES[@]}"

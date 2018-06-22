@@ -34,9 +34,15 @@
         }
     },
     "variables": {
-        "tshirtSizeTest": {
+        "tshirtSizeTest2": {
             "zkVmIndexes": "0",
             "kafkaVmIndexes": "0",
+            "redisVmIndexes": "0",
+            "mongoVmIndexes": "0"
+        },
+        "tshirtSizeTest": {
+            "zkVmIndexes": "0,1,2",
+            "kafkaVmIndexes": "1,2,3",
             "redisVmIndexes": "0",
             "mongoVmIndexes": "0"
         },
@@ -57,7 +63,8 @@
         "vmCount": "[length(variables('vms'))]",
         "scripts": [
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/entry.sh')]",
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/zookeeper.sh')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/zookeeper.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/kafka.sh')]"
         ]
     },
     "resources": [
