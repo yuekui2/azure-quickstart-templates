@@ -84,7 +84,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes)]"
+                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes, ' -k ', variables('tshirtSize').kafkaVmIndexes, ' -r ', variables('tshirtSize').redisVmIndexes, ' -m ', variables('tshirtSize').mongoVmIndexes)]"
                 }
             }
         }
