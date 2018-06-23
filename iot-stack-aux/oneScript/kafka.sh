@@ -20,13 +20,11 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-# Author: Cognosys Technologies
+#
+# Based on https://github.com/Azure/azure-quickstart-templates/tree/master/kafka-ubuntu-multidisks
 
 ###
-### Warning! This script partitions and formats disk information be careful where you run it
-###          This script is currently under development and has only been tested on Ubuntu images in Azure
-###          This script is not currently idempotent and only works for provisioning at the moment
+### This script has been refactored to be idempotent.
 
 ### Remaining work items
 ### -Alternate discovery options (Azure Storage)
@@ -46,7 +44,7 @@ help()
 
 log()
 {
-    # If you want to enable this logging add a un-comment the line below and add your account key
+    # Uncomment to set logging service endpoint such as Loggly
     #curl -X POST -H "content-type:text/plain" --data-binary "$(date) | ${HOSTNAME} | $1" https://logs-01.loggly.com/inputs/805ae6ae-6585-4f46-b8f8-978ae5433ea4/tag/http/
     echo "$1"
 }
@@ -60,8 +58,6 @@ then
     exit 3
 fi
 
-# TEMP FIX - Re-evaluate and remove when possible
-# This is an interim fix for hostname resolution in current VM
 grep -q "${HOSTNAME}" /etc/hosts
 if [ $? -eq $SUCCESS ];
 then
