@@ -76,6 +76,9 @@ ZOOKEEPER_PORT="2181"
 KAFKADIR="/var/lib/kafkadir"
 KAFKA_ADVERTISED=""
 
+KAFKA_MIN_VER=2.11
+KAFKA_MAJ_VER=0.9.0.0
+
 #Loop through options passed
 while getopts :i:a:ta:h optname; do
     log "Option $optname set with value ${OPTARG}"
@@ -145,10 +148,8 @@ install_kafka()
     log "Installing Kafka"
 
     cd /usr/local
-    min_ver=2.11
-    maj_ver=0.9.0.0
-    src_package="kafka_${min_ver}-${maj_ver}.tgz"
-    download_url=http://archive.apache.org/dist/kafka/${maj_ver}/${src_package}
+    src_package="kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}.tgz"
+    download_url=http://archive.apache.org/dist/kafka/${KAFKA_MAJ_VER}/${src_package}
 
     stop_kafka
 
@@ -161,7 +162,7 @@ install_kafka()
       wget ${download_url}
     fi
     tar zxf ${src_package}
-    cd kafka_${min_ver}-${maj_ver}
+    cd kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}
 
     sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
     sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(get_ip_port_list "${ZOOKEEPER_IPS}"))/g" config/server.properties
@@ -175,8 +176,8 @@ install_kafka()
       echo "advertised.host.name=$(hostname -I)" >> config/server.properties
     fi
 
-    chmod u+x /usr/local/kafka/kafka_${min_ver}-${maj_ver}/bin/kafka-server-start.sh
-    /usr/local/kafka/kafka_${min_ver}-${maj_ver}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${min_ver}-${maj_ver}/config/server.properties &
+    chmod u+x /usr/local/kafka/kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}/bin/kafka-server-start.sh
+    /usr/local/kafka/kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}/config/server.properties &
 }
 
 # Primary Install Tasks
