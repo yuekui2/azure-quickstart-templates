@@ -123,4 +123,7 @@ fi
 contain_index "${CUR_VM_INDEX}" "${REDIS_VM_INDEXES[@]}"
 if [ $? -eq 0 ]; then
     echo "install Redis on ${VM_NAMES[${CUR_VM_INDEX}]}"
+    redis_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${REDIS_VM_INDEXES[@]})")
+    echo "redis_ips := ${redis_ips}"
+    /bin/bash ./redis-sentinel.sh -a "$(join , $(echo ${redis_ips[@]}))" -i "${CUR_VM_INDEX}"
 fi

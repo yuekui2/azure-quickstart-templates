@@ -43,7 +43,7 @@
         "tshirtSizeTest": {
             "zkVmIndexes": "0,1,2",
             "kafkaVmIndexes": "1,2,3",
-            "redisVmIndexes": "0",
+            "redisVmIndexes": "0,1,2",
             "mongoVmIndexes": "0"
         },
         "tshirtSizeProdStandard": {
@@ -64,7 +64,9 @@
         "scripts": [
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/entry.sh')]",
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/zookeeper.sh')]",
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/kafka.sh')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/kafka.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/redis-sentinel.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/redis-sentinel-startup.sh')]"
         ]
     },
     "resources": [
