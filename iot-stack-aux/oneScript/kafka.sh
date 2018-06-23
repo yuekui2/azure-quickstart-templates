@@ -120,7 +120,6 @@ get_ip_port_list() {
 
     declare -a EXPAND_STATICIP_RANGE_RESULTS=()
 
-    for (( n=0; n<${HOST_IPS[1]}; n++ ))
     for ip in ${HOST_IPS[@]}
     do
         HOST="${ip}:${ZOOKEEPER_PORT}"
@@ -128,6 +127,20 @@ get_ip_port_list() {
     done
 
     echo "${EXPAND_STATICIP_RANGE_RESULTS[@]}"
+}
+
+stop_kafka()
+{
+	# Find out what PID the Kafka instance is running as (if any)
+	KAFKAPID=`ps -ef | grep '/usr/local/kafka/' | grep -v grep | awk '{print $2}'`
+
+	if [ ! -z "$KAFKAPID" ]; then
+		log "Stopping Kafka daemon processes (PID $KAFKAPID)"
+
+		kill -15 $KAFKAPID
+	fi
+
+	sleep 5s
 }
 
 # Install kafka
@@ -140,6 +153,8 @@ install_kafka()
     maj_ver=0.9.0.0
     src_package="kafka_${min_ver}-${maj_ver}.tgz"
     download_url=http://archive.apache.org/dist/kafka/${maj_ver}/${src_package}
+
+    stop_kafka
 
     rm -rf kafka
     mkdir -p kafka
