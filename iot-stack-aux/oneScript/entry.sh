@@ -76,11 +76,13 @@ done
 contain_index () {
   local e match="$1"
   shift
+  count=-1
   for e;
   do
-    [[ "$e" == "$match" ]] && return 0;
+    count=$((count+1))
+    [[ "$e" == "$match" ]] && return $count;
   done
-  return 1
+  return -1
 }
 
 function join { local IFS="$1"; shift; echo "$*"; }
@@ -100,30 +102,34 @@ get_ips() {
 }
 
 contain_index "${CUR_VM_INDEX}" "${ZK_VM_INDEXES[@]}"
-if [ $? -eq 0 ]; then
+INSTANCE_INDEX=$?
+if [ ${INSTANCE_INDEX} -ne 255 ]; then
     echo "install Zookeeper on ${VM_NAMES[${CUR_VM_INDEX}]}"
     zk_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${ZK_VM_INDEXES[@]})")
     echo "zk_ips := ${zk_ips}"
-    /bin/bash ./zookeeper.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${CUR_VM_INDEX}"
+    /bin/bash ./zookeeper.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${INSTANCE_INDEX}"
 fi
 
 contain_index "${CUR_VM_INDEX}" "${KAFKA_VM_INDEXES[@]}"
-if [ $? -eq 0 ]; then
+INSTANCE_INDEX=$?
+if [ ${INSTANCE_INDEX} -ne 255 ]; then
     echo "install Kafka on ${VM_NAMES[${CUR_VM_INDEX}]}"
     zk_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${ZK_VM_INDEXES[@]})")
     echo "zk_ips := ${zk_ips}"
-    /bin/bash ./kafka.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${CUR_VM_INDEX}"
+    /bin/bash ./kafka.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${INSTANCE_INDEX}"
 fi
 
 contain_index "${CUR_VM_INDEX}" "${MONGO_VM_INDEXES[@]}"
-if [ $? -eq 0 ]; then
+INSTANCE_INDEX=$?
+if [ ${INSTANCE_INDEX} -ne 255 ]; then
     echo "install MongoDB on ${VM_NAMES[${CUR_VM_INDEX}]}"
 fi
 
 contain_index "${CUR_VM_INDEX}" "${REDIS_VM_INDEXES[@]}"
-if [ $? -eq 0 ]; then
+INSTANCE_INDEX=$?
+if [ ${INSTANCE_INDEX} -ne 255 ]; then
     echo "install Redis on ${VM_NAMES[${CUR_VM_INDEX}]}"
     redis_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${REDIS_VM_INDEXES[@]})")
     echo "redis_ips := ${redis_ips}"
-    /bin/bash ./redis-sentinel.sh -a "$(join , $(echo ${redis_ips[@]}))" -i "${CUR_VM_INDEX}"
+    /bin/bash ./redis-sentinel.sh -a "$(join , $(echo ${redis_ips[@]}))" -i "${INSTANCE_INDEX}"
 fi
