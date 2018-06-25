@@ -101,6 +101,55 @@ get_ips() {
     echo "${IPS_MATCHED[@]}"
 }
 
+validate_input() {
+    vm_count=${#VM_NAMES[@]}
+    ip_count=${#VM_IPS[@]}
+
+    if [ ${vm_count} -ne ${ip_count} ]; then
+        echo "VM machine count (${vm_count}) should be equal to IP count (${ip_count})"
+        exit 1
+    fi
+
+    if [[ ! ${CUR_VM_INDEX} -lt ${vm_count} ]] || [ ${CUR_VM_INDEX} -lt 0 ]; then
+        echo "VM index ${CUR_VM_INDEX} is NOT valid [0, ${vm_count})"
+        exit 1
+    fi
+
+    for i in ${ZK_VM_INDEXES[@]}
+    do
+        if [[ ! ${i} -lt ${vm_count} ]] || [ ${i} -lt 0 ]; then
+            echo "Zookeeper VM index ${i} is NOT valid [0, ${vm_count})"
+            exit 1
+        fi
+    done
+
+    for i in ${KAFKA_VM_INDEXES[@]}
+    do
+        if [[ ! ${i} -lt ${vm_count} ]] || [ ${i} -lt 0 ]; then
+            echo "Kafka VM index ${i} is NOT valid [0, ${vm_count})"
+            exit 1
+        fi
+    done
+
+    for i in ${MONGO_VM_INDEXES[@]}
+    do
+        if [[ ! ${i} -lt ${vm_count} ]] || [ ${i} -lt 0 ]; then
+            echo "MongoDB VM index ${i} is NOT valid [0, ${vm_count})"
+            exit 1
+        fi
+    done
+
+    for i in ${REDIS_VM_INDEXES[@]}
+    do
+        if [[ ! ${i} -lt ${vm_count} ]] || [ ${i} -lt 0 ]; then
+            echo "Redis VM index ${i} is NOT valid [0, ${vm_count})"
+            exit 1
+        fi
+    done
+}
+
+validate_input
+
 contain_index "${CUR_VM_INDEX}" "${ZK_VM_INDEXES[@]}"
 INSTANCE_INDEX=$?
 if [ ${INSTANCE_INDEX} -ne 255 ]; then

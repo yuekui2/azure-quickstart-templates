@@ -40,13 +40,13 @@
             "redisVmIndexes": "0",
             "mongoVmIndexes": "0"
         },
-        "tshirtSizeTest3": {
-            "zkVmIndexes": "0,1,2",
-            "kafkaVmIndexes": "1,2,3",
-            "redisVmIndexes": "0,1,2",
+        "tshirtSizeTest": {
+            "zkVmIndexes": "3,1,5",
+            "kafkaVmIndexes": "4,0,3",
+            "redisVmIndexes": "4,2",
             "mongoVmIndexes": "0"
         },
-        "tshirtSizeTest": {
+        "tshirtSizeTest3": {
             "zkVmIndexes": "4",
             "kafkaVmIndexes": "4",
             "redisVmIndexes": "4",

@@ -1,6 +1,6 @@
 Connect-AzureRmAccount
 
-$index = 1
+$index = 2
 [int]$vmCount = 6
 $templateBaseUrl = "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/"
 
