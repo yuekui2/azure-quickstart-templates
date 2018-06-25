@@ -106,7 +106,12 @@ validate_input() {
     ip_count=${#VM_IPS[@]}
 
     if [ ${vm_count} -ne ${ip_count} ]; then
-        echo "VM machine count (${vm_count}) should be equal to IP count (${ip_count})"
+        echo "VM count (${vm_count}) should be equal to IP count (${ip_count})"
+        exit 1
+    fi
+
+    if [ ${vm_count} -lt 1 ]; then
+        echo "VM count should be at least 1"
         exit 1
     fi
 
