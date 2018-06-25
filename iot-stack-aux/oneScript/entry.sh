@@ -172,6 +172,12 @@ validate_input() {
             exit 1
         fi
     done
+
+    # Replica set key must have length between 6 and 1024 chars
+    if [ ${#REPLICA_SET_KEY} -lt 6 ] || [ ${#REPLICA_SET_KEY} -gt 1024 ]; then
+        echo "Replica set key has length ${#REPLICA_SET_KEY}, must be between 6 and 1024 chars"
+        exit 1
+    fi
 }
 
 validate_input
