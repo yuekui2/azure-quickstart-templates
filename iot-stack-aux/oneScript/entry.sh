@@ -11,6 +11,10 @@ help()
     echo "-m MongoDB VM indexes"
     echo "-r Redis VM indexes"
     echo "-i Current VM index"
+    echo "-t Replica set name"
+    echo "-y Replica set key"
+    echo "-u System administrator's user name"
+    echo "-p System administrator's password"
     echo "-h Help"
 }
 
@@ -36,8 +40,13 @@ declare -a MONGO_VM_INDEXES
 declare -a REDIS_VM_INDEXES
 declare -i CUR_VM_INDEX
 
+REPLICA_SET_NAME=""
+REPLICA_SET_KEY=""
+USERNAME=""
+PWD=""
+
 # Loop through options passed
-while getopts :n:a:z:k:m:r:i:h optname; do
+while getopts :n:a:z:k:m:r:i:t:y:u:p:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
     n) # VM names
@@ -60,6 +69,18 @@ while getopts :n:a:z:k:m:r:i:h optname; do
       ;;
     i) # Current VM index
       CUR_VM_INDEX=${OPTARG}
+      ;;
+    t) # Replica set name
+      REPLICA_SET_NAME=${OPTARG}
+      ;;
+    y) # Replica set key
+      REPLICA_SET_KEY=${OPTARG}
+      ;;
+    u) # User name
+      USERNAME=${OPTARG}
+      ;;
+    p) # Password
+      PWD=${OPTARG}
       ;;
     h) # show help
       help
@@ -177,6 +198,9 @@ contain_index "${CUR_VM_INDEX}" "${MONGO_VM_INDEXES[@]}"
 INSTANCE_INDEX=$?
 if [ ${INSTANCE_INDEX} -ne 255 ]; then
     echo "install MongoDB on ${VM_NAMES[${CUR_VM_INDEX}]}"
+    mongo_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${MONGO_VM_INDEXES[@]})")
+    echo "mongo_ips := ${mongo_ips}"
+    /bin/bash ./mongodb-ubuntu-install.sh -a "$(join , $(echo ${mongo_ips[@]}))" -i "${INSTANCE_INDEX}" -r ${REPLICA_SET_NAME} -k ${REPLICA_SET_KEY} -u ${USERNAME} -p ${PWD}
 fi
 
 contain_index "${CUR_VM_INDEX}" "${REDIS_VM_INDEXES[@]}"

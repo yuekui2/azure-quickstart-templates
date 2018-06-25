@@ -31,6 +31,31 @@
           "metadata": {
             "description": "T-shirt size of the IoT hub"
           }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Mongo administrator user name"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Mongo administrator password"
+            }
+        },
+        "replicaSetName": {
+            "type": "string",
+            "defaultValue": "rs0",
+            "metadata": {
+                "description": "The name of the MongoDB replica set"
+            }
+        },
+        "replicaSetKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The shared secret key for the MongoDB replica set"
+            }
         }
     },
     "variables": {
@@ -72,7 +97,8 @@
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/zookeeper.sh')]",
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/kafka.sh')]",
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/redis-sentinel.sh')]",
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/redis-sentinel-startup.sh')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/redis-sentinel-startup.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/oneScript/mongodb-ubuntu-install.sh')]"
         ]
     },
     "resources": [
@@ -92,7 +118,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes, ' -k ', variables('tshirtSize').kafkaVmIndexes, ' -r ', variables('tshirtSize').redisVmIndexes, ' -m ', variables('tshirtSize').mongoVmIndexes)]"
+                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes, ' -k ', variables('tshirtSize').kafkaVmIndexes, ' -r ', variables('tshirtSize').redisVmIndexes, ' -m ', variables('tshirtSize').mongoVmIndexes, ' -t ', parameters('replicaSetName'), ' -y ', parameters('replicaSetKey'), ' -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'))]"
                 }
             }
         }
