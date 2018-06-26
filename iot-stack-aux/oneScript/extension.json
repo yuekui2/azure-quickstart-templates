@@ -56,6 +56,13 @@
             "metadata": {
                 "description": "The shared secret key for the MongoDB replica set"
             }
+        },
+        "kafkaPartitions": {
+            "type": "int",
+            "defaultValue": "16",
+            "metadata": {
+                "description": "Kafka default number of Partitions"
+            }
         }
     },
     "variables": {
@@ -106,7 +113,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes, ' -k ', variables('tshirtSize').kafkaVmIndexes, ' -r ', variables('tshirtSize').redisVmIndexes, ' -m ', variables('tshirtSize').mongoVmIndexes, ' -t ', parameters('replicaSetName'), ' -y ', parameters('replicaSetKey'), ' -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'))]"
+                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes, ' -k ', variables('tshirtSize').kafkaVmIndexes, ' -r ', variables('tshirtSize').redisVmIndexes, ' -m ', variables('tshirtSize').mongoVmIndexes, ' -t ', parameters('replicaSetName'), ' -y ', parameters('replicaSetKey'), ' -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -x ', parameters('kafkaPartitions'))]"
                 }
             }
         }

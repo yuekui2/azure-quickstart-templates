@@ -39,6 +39,7 @@ help()
     echo "-i Broker id"
     echo "-a Zookeeper IP addresses"
     echo "-t Kafka advertised host name; optional, for public accessing only"
+    echo "-p Kafka default number of partitions"
     echo "-h Help"
 }
 
@@ -73,14 +74,15 @@ fi
 BROKER_ID=0
 ZOOKEEPER_IPS=""
 ZOOKEEPER_PORT="2181"
-KAFKADIR="/var/lib/kafkadir"
+KAFKA_DIR="/var/lib/kafkadir"
 KAFKA_ADVERTISED=""
 
 KAFKA_MIN_VER=2.11
 KAFKA_MAJ_VER=0.9.0.0
+KAFKA_PARTITIONS=16
 
 #Loop through options passed
-while getopts :i:a:ta:h optname; do
+while getopts :i:a:t:p:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
     i)  #broker id
@@ -91,6 +93,9 @@ while getopts :i:a:ta:h optname; do
       ;;
     t) # kafka advertised host name
       KAFKA_ADVERTISED=${OPTARG}
+      ;;
+    p) # kafka default number of partitions
+      KAFKA_PARTITIONS=${OPTARG}
       ;;
     h)  #show help
       help
@@ -166,8 +171,8 @@ install_kafka()
 
     sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
     sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(get_ip_port_list "${ZOOKEEPER_IPS}"))/g" config/server.properties
-    sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties
-    sed -r -i "s/(num.partitions)=(.*)/\1=16/g" config/server.properties
+    sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKA_DIR}/g" config/server.properties
+    sed -r -i "s/(num.partitions)=(.*)/\1=${KAFKA_PARTITIONS}/g" config/server.properties
 
     # Ensure new line before
     echo -e "\n" >> config/server.properties
@@ -183,5 +188,5 @@ install_kafka()
 
 # Primary Install Tasks
 install_java
-mkdir ${KAFKADIR}
+mkdir ${KAFKA_DIR}
 install_kafka

@@ -15,6 +15,7 @@ help()
     echo "-y Replica set key"
     echo "-u System administrator's user name"
     echo "-p System administrator's password"
+    echo "-x Kafka default number of partitions"
     echo "-h Help"
 }
 
@@ -44,9 +45,10 @@ REPLICA_SET_NAME=""
 REPLICA_SET_KEY=""
 USERNAME=""
 PWD=""
+KAFKA_PARTITIONS=16
 
 # Loop through options passed
-while getopts :n:a:z:k:m:r:i:t:y:u:p:h optname; do
+while getopts :n:a:z:k:m:r:i:t:y:u:p:x:h optname; do
     log "Option $optname set with value ${OPTARG}"
   case $optname in
     n) # VM names
@@ -81,6 +83,9 @@ while getopts :n:a:z:k:m:r:i:t:y:u:p:h optname; do
       ;;
     p) # Password
       PWD=${OPTARG}
+      ;;
+    x) # Kafka default number of partitions
+      KAFKA_PARTITIONS=${OPTARG}
       ;;
     h) # show help
       help
@@ -197,7 +202,7 @@ if [ ${INSTANCE_INDEX} -ne 255 ]; then
     echo "install Kafka on ${VM_NAMES[${CUR_VM_INDEX}]}"
     zk_ips=$(get_ips "$(echo ${VM_IPS[@]})" "$(echo ${ZK_VM_INDEXES[@]})")
     echo "zk_ips := ${zk_ips}"
-    /bin/bash ./kafka.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${INSTANCE_INDEX}"
+    /bin/bash ./kafka.sh -a "$(join , $(echo ${zk_ips[@]}))" -i "${INSTANCE_INDEX}" -p "${KAFKA_PARTITIONS}"
 fi
 
 contain_index "${CUR_VM_INDEX}" "${MONGO_VM_INDEXES[@]}"
