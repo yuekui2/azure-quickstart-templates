@@ -219,15 +219,6 @@ configure_replicaset()
     if [ ${INSTANCE_COUNT} -eq 1]; then
         log "Initiating a replica set $REPLICA_SET_NAME with a single member"
         mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.initiate())"
-
-        MEMBER_HOST="${NODE_IPS[${INSTANCE_INDEX}]}:${MONGODB_PORT}"
-
-        log "Adding member $MEMBER_HOST to replica set $REPLICA_SET_NAME"
-        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.add('${MEMBER_HOST}'))"
-
-        # Print the current replica set configuration
-        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.conf())"
-        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.status())"
     fi
 
     # Initiate a replica set (only run this section on the very last node)
