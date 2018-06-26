@@ -59,7 +59,7 @@
         },
         "kafkaPartitions": {
             "type": "int",
-            "defaultValue": "16",
+            "defaultValue": 16,
             "metadata": {
                 "description": "Kafka default number of Partitions"
             }
