@@ -216,7 +216,7 @@ configure_replicaset()
     start_mongodb
 
     # Only one member case.
-    if [ ${INSTANCE_COUNT} -eq 1]; then
+    if [ ${INSTANCE_COUNT} -eq 1 ]; then
         log "Initiating a replica set $REPLICA_SET_NAME with a single member"
         mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.initiate())"
     fi
@@ -274,6 +274,7 @@ configure_mongodb()
     chown -R mongodb:mongodb "$MONGODB_DATA/log"
     chmod 755 "$MONGODB_DATA"
 
+    rm -rf /var/run/mongodb
     mkdir /var/run/mongodb
     touch /var/run/mongodb/mongod.pid
     chmod 777 /var/run/mongodb/mongod.pid
