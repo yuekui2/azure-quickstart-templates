@@ -167,6 +167,7 @@ install_kafka()
     sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
     sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(get_ip_port_list "${ZOOKEEPER_IPS}"))/g" config/server.properties
     sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKADIR}/g" config/server.properties
+    sed -r -i "s/(num.partitions)=(.*)/\1=16/g" config/server.properties
 
     # Ensure new line before
     echo -e "\n" >> config/server.properties

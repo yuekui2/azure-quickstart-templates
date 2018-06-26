@@ -59,23 +59,11 @@
         }
     },
     "variables": {
-        "tshirtSizeTest2": {
+        "tshirtSizeTest": {
             "zkVmIndexes": "0",
             "kafkaVmIndexes": "0",
             "redisVmIndexes": "0",
             "mongoVmIndexes": "0"
-        },
-        "tshirtSizeTest": {
-            "zkVmIndexes": "3,1,5",
-            "kafkaVmIndexes": "4,0,3",
-            "redisVmIndexes": "4,2",
-            "mongoVmIndexes": "0"
-        },
-        "tshirtSizeTest3": {
-            "zkVmIndexes": "4",
-            "kafkaVmIndexes": "4",
-            "redisVmIndexes": "4",
-            "mongoVmIndexes": "4"
         },
         "tshirtSizeProdStandard": {
             "zkVmIndexes": "0,1,2",

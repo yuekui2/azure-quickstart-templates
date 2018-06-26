@@ -1,7 +1,7 @@
 Connect-AzureRmAccount
 
-$index = 3
-[int]$vmCount = 6
+$index = 4
+[int]$vmCount = 1
 $templateBaseUrl = "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/"
 
 $rgName = "kuistackrg" + $index
@@ -35,7 +35,7 @@ New-AzureRmResourceGroupDeployment `
 # vm in a new subnet
 $newSubnetName = "auxsubnet" + $index
 $namespace = "aux"  + $index
-$vmSize = "Standard_A1"
+$vmSize = "Standard_A4"
 New-AzureRmResourceGroupDeployment `
     -Name $deploymentName -ResourceGroupName $rgName `
     -Verbose -DeploymentDebugLogLevel All `
@@ -131,3 +131,5 @@ For ($i = 0; $i -lt $vmCount; $i++) {
     Write-Host $vmName
     Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force
 }
+$vmName = $vmNamePrefix + 0
+Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force
