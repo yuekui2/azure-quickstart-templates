@@ -197,11 +197,6 @@ install_mongodb()
 #############################################################################
 configure_replicaset()
 {
-    if [ ${INSTANCE_COUNT} -lt 3 ]; then
-        log "Less than 3 instances; do not configure replica set"
-        return
-    fi
-
     log "Configuring a replica set $REPLICA_SET_NAME"
 
     echo "$REPLICA_SET_KEY_DATA" | tee "$REPLICA_SET_KEY_FILE" > /dev/null
@@ -220,9 +215,24 @@ configure_replicaset()
     # Attempt to start the MongoDB daemon so that configuration changes take effect
     start_mongodb
 
+    # Only one member case.
+    if [ ${INSTANCE_COUNT} -eq 1]; then
+        log "Initiating a replica set $REPLICA_SET_NAME with a single member"
+        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.initiate())"
+
+        MEMBER_HOST="${NODE_IPS[${INSTANCE_INDEX}]}:${MONGODB_PORT}"
+
+        log "Adding member $MEMBER_HOST to replica set $REPLICA_SET_NAME"
+        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.add('${MEMBER_HOST}'))"
+
+        # Print the current replica set configuration
+        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.conf())"
+        mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.status())"
+    fi
+
     # Initiate a replica set (only run this section on the very last node)
-    # The 2nd last is considered as the last member when instance count is >= 3.
-    if [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 2 )) ]; then
+    # The 2nd last is considered as the last member
+    if [ ${INSTANCE_COUNT} -gt 1 ] && [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 2 )) ]; then
         # Log a message to facilitate troubleshooting
         log "Initiating a replica set $REPLICA_SET_NAME with $INSTANCE_COUNT members"
 
@@ -244,8 +254,8 @@ configure_replicaset()
     fi
 
     # Register an arbiter node with the replica set
-    # The last is considered as the arbiter when instance count is >= 3.
-    if [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 1 )) ]; then
+    # The last is considered as the arbiter
+    if [ ${INSTANCE_COUNT} -gt 1 ] && [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 1 )) ]; then
 
         # Work out the IP address of the last member node where we initiated a replica set
         let "PRIMARY_MEMBER_INDEX=$INSTANCE_COUNT-1"

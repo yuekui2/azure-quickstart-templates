@@ -112,6 +112,8 @@ For ($i = 0; $i -lt $vmCount; $i++) {
     Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force
 }
 
+$replicaSetName="rs0"
+$replicaSetKey="replicask"
 New-AzureRmResourceGroupDeployment `
     -Name $deploymentName -ResourceGroupName $rgName `
     -Verbose -DeploymentDebugLogLevel All `
@@ -119,6 +121,8 @@ New-AzureRmResourceGroupDeployment `
     -vmIPs $vmIPs `
     -templateBaseUrl $templateBaseUrl `
     -tshirtSize $tshirtSize `
+    -adminUsername $adminUsername -adminPassword $pwd `
+    -replicaSetName $replicaSetName -replicaSetKey $replicaSetKey `
     -TemplateFile C:\Users\kuiyu\kafkaAzure\azure-quickstart-templates\iot-stack-aux\oneScript\extension.json
 
 $scriptName = "scripts"
