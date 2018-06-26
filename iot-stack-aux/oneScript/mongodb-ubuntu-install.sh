@@ -131,6 +131,30 @@ then
     exit 3
 fi
 
+# fail outputs the error and exits
+function fail {
+  echo $1 >&2
+  exit 1
+}
+
+# retry the given command
+function retry {
+  local n=1
+  local max=5
+  local delay=5
+  while true; do
+    "$@" && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        echo "Command failed. Attempt $n/$max:"
+        sleep $delay;
+      else
+        fail "The \"$@\" has failed after $n attempts."
+      fi
+    }
+  done
+}
+
 #############################################################################
 tune_memory()
 {
@@ -173,7 +197,7 @@ install_mongodb()
 
     # Configure mongodb.list file with the correct location
     # TODO: make key and version configurable
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 91FA4AD5
+    retry sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 91FA4AD5
     echo "deb ${PACKAGE_URL} "$(lsb_release -sc)"/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 
     # Install updates
