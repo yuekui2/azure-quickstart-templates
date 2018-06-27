@@ -197,6 +197,7 @@ install_mongodb()
 
     # Configure mongodb.list file with the correct location
     # TODO: make key and version configurable
+    # Execute the command with retry as it is seen failed occasionally
     retry sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 91FA4AD5
     echo "deb ${PACKAGE_URL} "$(lsb_release -sc)"/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 
@@ -239,14 +240,18 @@ configure_replicaset()
     # Attempt to start the MongoDB daemon so that configuration changes take effect
     start_mongodb
 
-    # Only one member case.
+    # node count |  primary index  | arbiter index |
+    #     1      |     0 (n-1)     |      NA       |
+    #    n>=2    |       n-2       |      n-1      |
+
+    # Only 1 member case.
     if [ ${INSTANCE_COUNT} -eq 1 ]; then
         log "Initiating a replica set $REPLICA_SET_NAME with a single member"
         mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.initiate())"
     fi
 
-    # Initiate a replica set (only run this section on the very last node)
-    # The 2nd last is considered as the last member
+    # >= 2 members case.
+    # Initiate a replica set (only run this section on the very 2nd last node, which is primary index)
     if [ ${INSTANCE_COUNT} -gt 1 ] && [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 2 )) ]; then
         # Log a message to facilitate troubleshooting
         log "Initiating a replica set $REPLICA_SET_NAME with $INSTANCE_COUNT members"
@@ -268,12 +273,12 @@ configure_replicaset()
         mongo master -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.status())"
     fi
 
-    # Register an arbiter node with the replica set
-    # The last is considered as the arbiter
+    # >= 2 members case.
+    # Register an arbiter node with the replica set. The last is considered as the arbiter.
     if [ ${INSTANCE_COUNT} -gt 1 ] && [ ${INSTANCE_INDEX} -eq $(( ${INSTANCE_COUNT} - 1 )) ]; then
 
         # Work out the IP address of the last member node where we initiated a replica set
-        let "PRIMARY_MEMBER_INDEX=$INSTANCE_COUNT-1"
+        let "PRIMARY_MEMBER_INDEX=$INSTANCE_COUNT-2"
         PRIMARY_MEMBER_HOST="${NODE_IPS[${PRIMARY_MEMBER_INDEX}]}:${MONGODB_PORT}"
         CURRENT_NODE_IPS=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`
         CURRENT_NODE_IP=${CURRENT_NODE_IPS[@]}
