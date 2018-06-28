@@ -67,10 +67,10 @@
     },
     "variables": {
         "tshirtSizeTest": {
-            "zkVmIndexes": "0",
-            "kafkaVmIndexes": "0",
-            "redisVmIndexes": "0",
-            "mongoVmIndexes": "0"
+            "zkVmIndexes": "3,4",
+            "kafkaVmIndexes": "3,4",
+            "redisVmIndexes": "3,4",
+            "mongoVmIndexes": "3,4"
         },
         "tshirtSizeProdStandard": {
             "zkVmIndexes": "0,1,2",

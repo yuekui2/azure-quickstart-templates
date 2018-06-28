@@ -1,7 +1,7 @@
 Connect-AzureRmAccount
 
-$index = 4
-[int]$vmCount = 1
+$index = 5
+[int]$vmCount = 6
 $templateBaseUrl = "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/"
 
 $rgName = "kuistackrg" + $index
@@ -131,5 +131,6 @@ For ($i = 0; $i -lt $vmCount; $i++) {
     Write-Host $vmName
     Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force
 }
+
 $vmName = $vmNamePrefix + 0
 Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force

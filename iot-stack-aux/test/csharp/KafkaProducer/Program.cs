@@ -19,7 +19,7 @@ public class Program
             for (int i = 0; i < 10; i++)
             {
                 var dr = producer.ProduceAsync("my-replicated-topic3", null, i + ": **** some test message text *****").Result;
-                Console.WriteLine($"Delivered '{dr.Value}' to: {dr.TopicPartitionOffset}");
+                Console.WriteLine($"Delivered '{dr.Value}' to: {dr.TopicPartitionOffset}, err: {dr.Error}");
             }
         }
 
