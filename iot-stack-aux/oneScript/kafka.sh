@@ -183,6 +183,8 @@ install_kafka()
     fi
 
     chmod u+x /usr/local/kafka/kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}/bin/kafka-server-start.sh
+    # Avoid exception of  Failed to acquire lock on file .lock in /tmp/kafka-logs during Kafka starts.
+    rm /tmp/kafka-logs/.lock
     /usr/local/kafka/kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${KAFKA_MIN_VER}-${KAFKA_MAJ_VER}/config/server.properties &
 }
 
