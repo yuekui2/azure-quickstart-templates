@@ -15,10 +15,17 @@
             }
         },
         "storageAccountName": {
-            "defaultValue": "iotstacksqlexsa",
+            "defaultValue": "iothubrpsa",
             "type": "string",
             "metadata": {
                 "description": "VM storage account name"
+            }
+        },
+        "storageEndpointSuffix": {
+            "defaultValue": "core.windows.net",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage endpoint suffix"
             }
         },
         "existingVnetName": {
@@ -81,9 +88,16 @@
         "nicName": "[concat(parameters('namespace'), 'Nic')]",
         "diskSize": 1023,
         "scripts": [
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/init.ps1')]",
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/setDB.sql')]",
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/sqlEx/createTestDB.sql')]"
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/init.ps1')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/setup.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/createTestDB.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/CreateSqlLogins.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/CreateIotHubProvisioningSchema.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/CreateIotHubProvisioningLogic.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/CreateIotHubProvisioningVersionData.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/CreateIotHubProvisioningData.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/IotDpsProvisioningSchema.sql')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/IotDpsProvisioningLogic.sql')]"
         ]
     },
     "resources": [
@@ -98,6 +112,7 @@
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
+                "accountType": "Standard_LRS",
                 "networkAcls": {
                     "bypass": "AzureServices",
                     "virtualNetworkRules": [],
@@ -175,96 +190,6 @@
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
-                    },
-                    {
-                        "name": "[concat(variables('nsgName'), 'docDbSecurityRule1')]",
-                        "properties": {
-                            "description": "Allow documentDB emulator access",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 142,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10251",
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "[concat(variables('nsgName'), 'docDbSecurityRule2')]",
-                        "properties": {
-                            "description": "Allow documentDB emulator access",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 143,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10252",
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "[concat(variables('nsgName'), 'docDbSecurityRule3')]",
-                        "properties": {
-                            "description": "Allow documentDB emulator access",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 144,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10253",
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "[concat(variables('nsgName'), 'docDbSecurityRule4')]",
-                        "properties": {
-                            "description": "Allow documentDB emulator access",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 145,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10254",
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "[concat(variables('nsgName'), 'docDbSecurityRule5')]",
-                        "properties": {
-                            "description": "Allow documentDB emulator access",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 146,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "8081",
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
                     }
                 ]
             }
@@ -320,7 +245,7 @@
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "vhd": {
-                            "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/osdisk.vhd')]"
+                            "uri": "[concat('http://', parameters('storageAccountName'),'.blob.', parameters('storageEndpointSuffix'), '/vhds/osdisk.vhd')]"
                         }
                     },
                     "dataDisks": [
@@ -330,7 +255,7 @@
                             "createOption": "Empty",
                             "caching": "ReadOnly",
                             "vhd": {
-                                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/datadisk1.vhd')]"
+                                "uri": "[concat('http://', parameters('storageAccountName'),'.blob.', parameters('storageEndpointSuffix'), '/vhds/datadisk1.vhd')]"
                             },
                             "diskSizeGB": 1023
                         }
@@ -355,7 +280,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.local.azurestack.external', '/')]"
+                        "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.', parameters('storageEndpointSuffix'), '/')]"
                     }
                 }
             },

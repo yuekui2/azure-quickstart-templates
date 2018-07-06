@@ -1,3 +1,6 @@
+CREATE DATABASE MasterDatabase
+GO
+
 CREATE LOGIN $(UserName) WITH PASSWORD = '$(Password)'
 GO
 
