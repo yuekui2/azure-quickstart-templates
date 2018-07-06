@@ -28,18 +28,6 @@
                 "description": "VM storage endpoint suffix"
             }
         },
-        "existingVnetName": {
-            "type": "string",
-            "metadata": {
-                "description": "Existing virtual network name"
-            }
-        },
-        "newSubnetAddressPrefix": {
-            "type": "string",
-            "metadata": {
-                "description": "New subnet address prefix"
-            }
-        },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_D4",
@@ -83,7 +71,10 @@
             "udCount": 5
         },
         "publicIpName": "[concat(parameters('namespace'), 'PublicIp')]",
+        "vnetName": "[concat(parameters('namespace'), 'Vnet')]",
+        "vnetAddrPrefix": "10.0.0.0/16",
         "subnetName": "[concat(parameters('namespace'), 'Subnet')]",
+        "subnetAddressPrefix": "10.0.1.0/24",
         "nsgName": "[concat(parameters('namespace'), 'Nsg')]",
         "nicName": "[concat(parameters('namespace'), 'Nic')]",
         "diskSize": 1023,
@@ -101,6 +92,23 @@
         ]
     },
     "resources": [
+        {
+            "name": "[variables('vnetName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [],
+            "tags": {
+                "displayName": "[variables('vnetName')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('vnetAddrPrefix')]"
+                    ]
+                }
+            }
+        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "sku": {
@@ -141,7 +149,7 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(parameters('existingVnetName'), '/', variables('subnetName'))]",
+            "name": "[concat(variables('vnetName'), '/', variables('subnetName'))]",
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
@@ -209,7 +217,7 @@
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), variables('subnetName'))]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "IPv4"
@@ -219,7 +227,7 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), variables('subnetName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
             ]
         },
