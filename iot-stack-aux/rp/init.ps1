@@ -1,3 +1,5 @@
+param([string]$username = "u", [string]$pwd = "p")
+
 # Initialize datadisk
 Get-Disk | `
 Where partitionstyle -eq 'raw' | `
@@ -27,7 +29,7 @@ Restart-Service -Force MSSQLSERVER
 # Create a test DB
 & sqlcmd -i "createTestDB.sql" -o "output.txt"
 # Enable and create SQL server login.
-& sqlcmd -i "CreateSqlLogins.sql" -o "output.txt"
+& sqlcmd -v UserName=$username -v Password=$pwd -i "CreateSqlLogins.sql" -o "output.txt"
 # Create tables for IOT hub
 & sqlcmd -i "CreateIotHubProvisioningSchema.sql" -o "output.txt"
 & sqlcmd -i "CreateIotHubProvisioningLogic.sql" -o "output.txt"

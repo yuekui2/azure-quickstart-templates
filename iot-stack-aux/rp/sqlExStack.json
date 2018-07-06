@@ -154,7 +154,10 @@
             "location": "[resourceGroup().location]",
             "properties": {
                 "addressPrefix": "[variables('subnetAddressPrefix')]"
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+            ]
         },
         {
             "type": "Microsoft.Network/networkSecurityGroups",
@@ -312,7 +315,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file init.ps1"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file init.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('secret'))]"
                 }
             }
         }
