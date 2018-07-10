@@ -1,0 +1,185 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of EventHub namespace"
+            }
+        },
+        "eventhubSku": {
+            "type": "string",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ],
+            "defaultValue": "Standard",
+            "metadata": {
+                "description": "The messaging tier for service Bus namespace"
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "allowedValues": [
+                1,
+                2,
+                4
+            ],
+            "defaultValue": 1,
+            "metadata": {
+                "description": "MessagingUnits for premium namespace"
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Event Hub"
+            }
+        },
+        "consumerGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Consumer Group"
+            }
+        },
+        "sqlExNamespace": {
+            "type": "string",
+            "metadata": {
+                "description": "VM namespace"
+            }
+        },
+        "sqlExDnsName": {
+            "type": "string",
+            "metadata": {
+                "description": "DNS name"
+            }
+        },
+        "sqlExStorageAccountName": {
+            "defaultValue": "iothubrpsa",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage account name"
+            }
+        },
+        "sqlExStorageEndpointSuffix": {
+            "defaultValue": "core.windows.net",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage endpoint suffix"
+            }
+        },
+        "sqlExVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D4",
+            "allowedValues": [
+                "Standard_D4"
+            ],
+            "metadata": {
+                "description": "Virtual machine size"
+            }
+        },
+        "sqlExVmName": {
+            "type": "string",
+            "metadata": {
+                "description": "VM name"
+            }
+        },
+        "sqlExAdminUsername": {
+            "type": "string",
+            "defaultValue": "azureuser",
+            "metadata": {
+                "description": "Virtual machine admin username"
+            }
+        },
+        "sqlExAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Virtual machine admin password"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        }
+    },
+    "variables": {
+        "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/cluster.json')]",
+        "sqlExTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/rp/sqlExStack.json')]"
+    },
+    "resources": [
+        {
+            "name": "cluster",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('clusterTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "namespaceName": {
+                        "value": "[parameters('namespaceName')]"
+                    },
+                    "eventhubSku": {
+                        "value": "[parameters('eventhubSku')]"
+                    },
+                    "skuCapacity": {
+                        "value": "[parameters('skuCapacity')]"
+                    },
+                    "eventHubName": {
+                        "value": "[parameters('eventHubName')]"
+                    },
+                    "consumerGroupName": {
+                        "value": "[parameters('consumerGroupName')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "sqlEx",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('sqlExTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "namespace": {
+                        "value": "[parameters('sqlExNamespace')]"
+                    },
+                    "dnsName": {
+                        "value": "[parameters('sqlExDnsName')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('sqlExStorageAccountName')]"
+                    },
+                    "storageEndpointSuffix": {
+                        "value": "[parameters('sqlExStorageEndpointSuffix')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('sqlExVmSize')]"
+                    },
+                    "vmName": {
+                        "value": "[parameters('sqlExVmName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('sqlExAdminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('sqlExAdminPassword')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
