@@ -9,6 +9,13 @@
                 "description": "Virtual network name"
             }
         },
+        "vnetAddrPrefix" : {
+            "type":"string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "Virtual network address prefix"
+            }
+        },
         "jumpBoxNewSubnetName": {
             "type": "string",
             "defaultValue": "auxsubset",
@@ -71,7 +78,7 @@
         }
     },
     "variables": {
-        "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/cluster.json')]",
+        "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vnet/vnet.json')]",
         "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/jumpboxWin.json')]"
     },
     "resources": [
@@ -88,6 +95,9 @@
                 "parameters": {
                     "vnetName": {
                         "value": "[parameters('vnetName')]"
+                    },
+                    "vnetAddrPrefix": {
+                        "value": "[parameters('vnetAddrPrefix')]"
                     }
                 }
             }
@@ -107,7 +117,7 @@
                 },
                 "parameters": {
                     "existingVnetName": {
-                        "value": "[reference('linkedTemplate').outputs.vnetName.value]"
+                        "value": "[reference('cluster').outputs.vnetName.value]"
                     },
                     "newSubnetName": {
                         "value": "[parameters('jumpBoxNewSubnetName')]"
