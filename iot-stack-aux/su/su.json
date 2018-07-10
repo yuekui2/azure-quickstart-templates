@@ -1,0 +1,144 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "stackvnet",
+            "metadata": {
+                "description": "Virtual network name"
+            }
+        },
+        "jumpBoxNewSubnetName": {
+            "type": "string",
+            "defaultValue": "auxsubset",
+            "metadata": {
+                "description": "New subnet name"
+            }
+        },
+        "jumpBoxNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "New subnet address prefix"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique name of the new storage account"
+            }
+        },
+        "jumpBoxVmName": {
+            "type": "string",
+            "defaultValue": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "azureuser",
+            "metadata": {
+                "description": "Virtual machine admin username"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Virtual machine admin password"
+            }
+        },
+        "jumpBoxNamespace": {
+            "type": "string",
+            "defaultValue": "aux",
+            "metadata": {
+                "description": "Namespace for NIC etc"
+            }
+        },
+        "jumpBoxDnsName": {
+            "type": "string",
+            "defaultValue": "jumpboxdns",
+            "metadata": {
+                "description": "DNS label prefix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        }
+    },
+    "variables": {
+        "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/cluster.json')]",
+        "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/jumpboxWin.json')]"
+    },
+    "resources": [
+        {
+            "name": "cluster",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('clusterTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "jumpboxWin",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('jumpboxWinTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[reference('linkedTemplate').outputs.vnetName.value]"
+                    },
+                    "newSubnetName": {
+                        "value": "[parameters('jumpBoxNewSubnetName')]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('jumpBoxNewSubnetAddressPrefix')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
+                    },
+                    "vmNamePrefix": {
+                        "value": "[parameters('jumpBoxVmName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "namespace": {
+                        "value": "[parameters('jumpBoxNamespace')]"
+                    },
+                    "dnsName": {
+                        "value": "[parameters('jumpBoxDnsName')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
