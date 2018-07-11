@@ -70,6 +70,47 @@
                 "description": "DNS label prefix"
             }
         },
+        "docDbNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.2.0/24",
+            "metadata": {
+                "description": "Document DB new subnet address prefix"
+            }
+        },
+        "docDbNewVmPrivateIpAddress": {
+            "type": "string",
+            "defaultValue": "10.0.2.10",
+            "metadata": {
+                "description": "Document DB new virtual machine private IP address"
+            }
+        },
+        "docDbVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_A1",
+            "allowedValues": [
+                "Standard_A1",
+                "Standard_A3",
+                "Standard_A4",
+                "Standard_A7"
+            ],
+            "metadata": {
+                "description": "Document DB virtual machine size"
+            }
+        },
+        "docDBWindowsOSVersion": {
+            "type": "string",
+            "defaultValue": "2016-Datacenter",
+            "metadata": {
+                "description": "Document DB Windows version for VM"
+            }
+        },
+        "storageEndpointSuffix": {
+            "defaultValue": "core.windows.net",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage endpoint suffix"
+            }
+        },
         "templateBaseUrl": {
             "type": "string",
             "metadata": {
@@ -79,7 +120,8 @@
     },
     "variables": {
         "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vnet/vnet.json')]",
-        "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/jumpboxWin.json')]"
+        "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/jumpboxWin.json')]",
+        "docDbTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/docDb.json')]"
     },
     "resources": [
         {
@@ -142,6 +184,53 @@
                     },
                     "dnsName": {
                         "value": "[parameters('jumpBoxDnsName')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "docDB",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('docDbTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[reference('cluster').outputs.vnetName.value]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('docDbNewSubnetAddressPrefix')]"
+                    },
+                    "newVmPrivateIpAddress": {
+                        "value": "[parameters('docDbNewVmPrivateIpAddress')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('docDbVmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "windowsOSVersion": {
+                        "value": "[parameters('docDbWindowsOSVersion')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
+                    },
+                    "storageEndpointSuffix": {
+                        "value": "[parameters('storageEndpointSuffix')]"
                     },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
