@@ -66,6 +66,7 @@
     "variables": {
         "namespace": "docDb",
         "vmName": "[concat(variables('namespace'), 'Vm')]",
+        "storageAccountName": "[concat(variables('namespace'), 'Sa')]",
         "nicName": "[concat(variables('namespace'), 'Nic')]",
         "nsgName": "[concat(variables('namespace'), 'Nsg')]",
         "subnetName": "[concat(variables('namespace'), 'Subnet')]",
@@ -234,16 +235,24 @@
                         "version": "latest"
                     },
                     "osDisk": {
+                        "osType": "Windows",
+                        "name": "[concat(parameters('vmName'),'_OsDisk_1')]",
                         "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "Premium_LRS"
+                        "caching": "ReadWrite",
+                        "vhd": {
+                            "uri": "[concat('http://', parameters('storageAccountName'),'.blob.', parameters('storageEndpointSuffix'), '/vhds/osdisk.vhd')]"
                         }
                     },
                     "dataDisks": [
                         {
-                            "diskSizeGB": "[variables('diskSize')]",
+                            "name": "datadisk1",
                             "lun": 0,
-                            "createOption": "Empty"
+                            "createOption": "Empty",
+                            "caching": "ReadOnly",
+                            "vhd": {
+                                "uri": "[concat('http://', parameters('storageAccountName'),'.blob.', parameters('storageEndpointSuffix'), '/vhds/datadisk1.vhd')]"
+                            },
+                            "diskSizeGB": "[variables('diskSize')]"
                         }
                     ]
                 },
