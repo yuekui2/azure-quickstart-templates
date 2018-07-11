@@ -1,7 +1,8 @@
-$index = 7
+$index = 1
 $rgName = "iotrprg" + $index
 $deploymentName = "iotrpdeploy" +  $index
 $vnetName = "stackvnet" + $index
+$vnetAddrPrefix = "10.0.0.0/16"
 $adminUsername="azureuser"
 $PlainPassword = "IotStackAux@1"
 $pwd = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
@@ -22,6 +23,7 @@ New-AzureRmResourceGroupDeployment `
     -TemplateFile C:\Users\kuiyu\kafkaAzure\azure-quickstart-templates\iot-stack-aux\su\su.json `
     -Verbose -DeploymentDebugLogLevel All `
     -vnetName $vnetName `
+    -vnetAddrPrefix $vnetAddrPrefix `
     -jumpBoxNewSubnetName $jumpBoxNewSubnetName `
     -jumpBoxNewSubnetAddressPrefix 10.0.6.0/24 `
     -storageAccountName $storageAccountName `
@@ -32,4 +34,22 @@ New-AzureRmResourceGroupDeployment `
     -jumpBoxDnsName $jumpBoxDnsName `
     -templateBaseUrl $templateBaseUrl
 
+$newSubnetAddressPrefix = "10.0.7.0/24"
+$newVmPrivateIpAddress = "10.0.7.10"
+$vmSize = "Standard_A3"
+$storageAccountName = "docdbsa"
+New-AzureRmResourceGroupDeployment `
+    -Name $deploymentName `
+    -ResourceGroupName $rgName `
+    -TemplateFile C:\Users\kuiyu\kafkaAzure\azure-quickstart-templates\iot-stack-aux\su\docDb.json `
+    -Verbose -DeploymentDebugLogLevel All `
+    -existingVnetName $vnetName `
+    -newSubnetAddressPrefix $newSubnetAddressPrefix `
+    -newVmPrivateIpAddress $newVmPrivateIpAddress `
+    -vmSize $vmSize `
+    -adminUsername $adminUsername `
+    -adminPassword $pwd `
+    -windowsOSVersion 2016-Datacenter `
+    -storageAccountName $storageAccountName `
+    -templateBaseUrl $templateBaseUrl
 

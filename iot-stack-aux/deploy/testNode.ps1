@@ -112,6 +112,13 @@ For ($i = 0; $i -lt $vmCount; $i++) {
     Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force
 }
 
+$scriptName = "scripts"
+For ($i = 0; $i -lt $vmCount; $i++) {
+    $vmName = $vmNamePrefix + $i
+    Write-Host $vmName
+    Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName $vmName –Name $scriptName -Force
+}
+
 $replicaSetName="rs0"
 $replicaSetKey="replicask"
 New-AzureRmResourceGroupDeployment `
