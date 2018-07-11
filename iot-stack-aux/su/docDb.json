@@ -56,6 +56,20 @@
                 "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
             }
         },
+        "storageAccountName": {
+            "defaultValue": "iothubrpsa",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage account name"
+            }
+        },
+        "storageEndpointSuffix": {
+            "defaultValue": "core.windows.net",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage endpoint suffix"
+            }
+        },
         "templateBaseUrl": {
             "type": "string",
             "metadata": {
@@ -66,7 +80,6 @@
     "variables": {
         "namespace": "docDb",
         "vmName": "[concat(variables('namespace'), 'Vm')]",
-        "storageAccountName": "[concat(variables('namespace'), 'Sa')]",
         "nicName": "[concat(variables('namespace'), 'Nic')]",
         "nsgName": "[concat(variables('namespace'), 'Nsg')]",
         "subnetName": "[concat(variables('namespace'), 'Subnet')]",
@@ -211,12 +224,34 @@
             }
         },
         {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccountName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "accountType": "Standard_LRS",
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": false
+            }
+        },
+        {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[variables('vmName')]",
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -236,7 +271,7 @@
                     },
                     "osDisk": {
                         "osType": "Windows",
-                        "name": "[concat(parameters('vmName'),'_OsDisk_1')]",
+                        "name": "[concat(variables('vmName'),'_OsDisk_1')]",
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "vhd": {
@@ -245,7 +280,7 @@
                     },
                     "dataDisks": [
                         {
-                            "name": "datadisk1",
+                            "name": "[concat(variables('vmName'),'_DataDisk_1')]",
                             "lun": 0,
                             "createOption": "Empty",
                             "caching": "ReadOnly",
