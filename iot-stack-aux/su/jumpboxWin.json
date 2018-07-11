@@ -1,0 +1,236 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingVnetName": {
+            "type": "string",
+            "defaultValue": "stackvnet",
+            "metadata": {
+                "description": "Existing virtual network name"
+            }
+        },
+        "newSubnetName": {
+            "type": "string",
+            "defaultValue": "auxsubset",
+            "metadata": {
+                "description": "New subnet name"
+            }
+        },
+        "newSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "New subnet address prefix"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique name of the new storage account"
+            }
+        },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name"
+            }
+        },
+        "docDbVmName": {
+            "type": "string",
+            "defaultValue": "docDbVm",
+            "metadata": {
+                "description": "Document DB virtual machine name"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "azureuser",
+            "metadata": {
+                "description": "Virtual machine admin username"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Virtual machine admin password"
+            }
+        },
+        "namespace": {
+            "type": "string",
+            "defaultValue": "aux",
+            "metadata": {
+                "description": "Namespace for NIC etc"
+            }
+        },
+        "dnsName": {
+            "type": "string",
+            "defaultValue": "jumpboxdns",
+            "metadata": {
+                "description": "DNS label prefix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        }
+    },
+    "variables": {
+        "availabilitySetSettings": {
+            "name": "iotauxas",
+            "fdCount": 3,
+            "udCount": 5
+        },
+        "nsgName": "[concat(parameters('namespace'), 'Nsg')]",
+        "nicName": "[concat(parameters('namespace'), 'nic')]",
+        "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName')), '/subnets/',  parameters('newSubnetName'))]",
+        "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+        },
+        "diskSize": 1023,
+        "scripts": [
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/jumpboxWin.ps1')]"
+        ],
+        "publicIpName": "[concat(parameters('namespace'), 'publicIp')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('existingVnetName'), '/', parameters('newSubnetName'))]",
+            "apiVersion": "2017-10-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressPrefix": "[parameters('newSubnetAddressPrefix')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIpName')]",
+            "apiVersion": "2017-10-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('dnsName')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('nsgName')]",
+            "apiVersion": "2018-02-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "[concat(variables('nsgName'), 'SqlExSecurityRule')]",
+                        "properties": {
+                            "description": "Allow external SQL Express access",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 140,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "3389",
+                                "1433"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('newSubnetName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('vmName'))]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_A5"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": "[variables('imageReference')]",
+                    "osDisk": {
+                        "name": "[concat(parameters('vmName'), '-osdisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmName'), '/scripts')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.9",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file jumpboxWin.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -h ', parameters('docDbVmName'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

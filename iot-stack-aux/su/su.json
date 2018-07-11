@@ -9,8 +9,8 @@
                 "description": "Virtual network name"
             }
         },
-        "vnetAddrPrefix" : {
-            "type":"string",
+        "vnetAddrPrefix": {
+            "type": "string",
             "defaultValue": "10.0.0.0/16",
             "metadata": {
                 "description": "Virtual network address prefix"
@@ -84,6 +84,13 @@
                 "description": "Document DB new virtual machine private IP address"
             }
         },
+        "docDbVmName": {
+            "type": "string",
+            "defaultValue": "docDbVm",
+            "metadata": {
+                "description": "Document DB virtual machine name"
+            }
+        },
         "docDbVmSize": {
             "type": "string",
             "defaultValue": "Standard_A1",
@@ -120,7 +127,7 @@
     },
     "variables": {
         "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vnet/vnet.json')]",
-        "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/jumpboxWin.json')]",
+        "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/jumpboxWin.json')]",
         "docDbTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/docDb.json')]"
     },
     "resources": [
@@ -140,53 +147,6 @@
                     },
                     "vnetAddrPrefix": {
                         "value": "[parameters('vnetAddrPrefix')]"
-                    }
-                }
-            }
-        },
-        {
-            "name": "jumpboxWin",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-07-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('jumpboxWinTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "existingVnetName": {
-                        "value": "[reference('cluster').outputs.vnetName.value]"
-                    },
-                    "newSubnetName": {
-                        "value": "[parameters('jumpBoxNewSubnetName')]"
-                    },
-                    "newSubnetAddressPrefix": {
-                        "value": "[parameters('jumpBoxNewSubnetAddressPrefix')]"
-                    },
-                    "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
-                    },
-                    "vmNamePrefix": {
-                        "value": "[parameters('jumpBoxVmName')]"
-                    },
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPassword": {
-                        "value": "[parameters('adminPassword')]"
-                    },
-                    "namespace": {
-                        "value": "[parameters('jumpBoxNamespace')]"
-                    },
-                    "dnsName": {
-                        "value": "[parameters('jumpBoxDnsName')]"
-                    },
-                    "templateBaseUrl": {
-                        "value": "[parameters('templateBaseUrl')]"
                     }
                 }
             }
@@ -214,6 +174,9 @@
                     "newVmPrivateIpAddress": {
                         "value": "[parameters('docDbNewVmPrivateIpAddress')]"
                     },
+                    "vmName": {
+                        "value": "[parameters('docDbVmName')]"
+                    },
                     "vmSize": {
                         "value": "[parameters('docDbVmSize')]"
                     },
@@ -231,6 +194,56 @@
                     },
                     "storageEndpointSuffix": {
                         "value": "[parameters('storageEndpointSuffix')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "jumpboxWin",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'docDB')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('jumpboxWinTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[reference('cluster').outputs.vnetName.value]"
+                    },
+                    "newSubnetName": {
+                        "value": "[parameters('jumpBoxNewSubnetName')]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('jumpBoxNewSubnetAddressPrefix')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
+                    },
+                    "vmName": {
+                        "value": "[parameters('jumpBoxVmName')]"
+                    },
+                    "docDbVmName": {
+                        "value": "[parameters('docDbVmName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "namespace": {
+                        "value": "[parameters('jumpBoxNamespace')]"
+                    },
+                    "dnsName": {
+                        "value": "[parameters('jumpBoxDnsName')]"
                     },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"

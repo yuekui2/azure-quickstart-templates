@@ -23,6 +23,13 @@
                 "description": "New virtual machine private IP address"
             }
         },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "docDbVm",
+            "metadata": {
+                "description": "Virtual machine name"
+            }
+        },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_A1",
@@ -79,7 +86,6 @@
     },
     "variables": {
         "namespace": "docDb",
-        "vmName": "[concat(variables('namespace'), 'Vm')]",
         "nicName": "[concat(variables('namespace'), 'Nic')]",
         "nsgName": "[concat(variables('namespace'), 'Nsg')]",
         "subnetName": "[concat(variables('namespace'), 'Subnet')]",
@@ -246,7 +252,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[variables('vmName')]",
+            "name": "[parameters('vmName')]",
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -258,7 +264,7 @@
                     "vmSize": "[parameters('vmSize')]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('vmName')]",
+                    "computerName": "[parameters('vmName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -271,7 +277,7 @@
                     },
                     "osDisk": {
                         "osType": "Windows",
-                        "name": "[concat(variables('vmName'),'_OsDisk_1')]",
+                        "name": "[concat(parameters('vmName'),'_OsDisk_1')]",
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "vhd": {
@@ -280,7 +286,7 @@
                     },
                     "dataDisks": [
                         {
-                            "name": "[concat(variables('vmName'),'_DataDisk_1')]",
+                            "name": "[concat(parameters('vmName'),'_DataDisk_1')]",
                             "lun": 0,
                             "createOption": "Empty",
                             "caching": "ReadOnly",
@@ -302,11 +308,11 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vmName'), '/scripts')]",
+            "name": "[concat(parameters('vmName'), '/scripts')]",
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -315,7 +321,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file docDbInit.ps1"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file docDbInit.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'))]"
                 }
             }
         }
