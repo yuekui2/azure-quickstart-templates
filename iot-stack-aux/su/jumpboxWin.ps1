@@ -1,4 +1,4 @@
-param([string]$username = "u", [string]$pwd = "p", [string]$computerName = "h")
+param([string]$username = "u", [string]$pwd = "p", [string]$computerName = "c")
 
 $certsFolder = "certs"
 $outputpath = "\\" + $computerName + "\" + $certsFolder + "\DocDbSslCert.pfx"

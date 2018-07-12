@@ -227,7 +227,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file jumpboxWin.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -h ', parameters('docDbVmName'))]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file jumpboxWin.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -c ', parameters('docDbVmName'))]"
                 }
             }
         }
