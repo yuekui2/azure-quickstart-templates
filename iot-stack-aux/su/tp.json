@@ -150,7 +150,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('vms')[copyindex()]]",
+                            "privateIPAddress": "[variables('privateIps')[copyindex()]]",
                             "subnet": {
                                 "id": "[variables('subnetRef')]"
                             }
@@ -209,17 +209,21 @@
                     "osDisk": {
                         "name": "[concat(variables('vms')[copyindex()], '-osdisk')]",
                         "caching": "ReadWrite",
-                        "createOption": "FromImage"
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/osdisk.vhd')]"
+                        }
                     },
                     "dataDisks": [
                         {
                             "lun": 0,
                             "name": "[concat(variables('vms')[copyindex()], '-datadisk1')]",
-                            "createOption": "attach",
+                            "createOption": "Empty",
                             "caching": "ReadWrite",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', variables('vms')[copyindex()], '-datadisk1'))]"
-                            }
+                            "vhd": {
+                                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/datadisk1.vhd')]"
+                            },
+                            "diskSizeGB": 1023
                         }
                     ]
                 },
