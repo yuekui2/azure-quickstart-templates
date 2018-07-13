@@ -326,7 +326,7 @@
         {
             "name": "thirdparty",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2016-07-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
             ],

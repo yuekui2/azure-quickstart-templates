@@ -75,11 +75,6 @@
         }
     },
     "variables": {
-        "availabilitySetSettings": {
-            "name": "iotauxas",
-            "fdCount": 3,
-            "udCount": 5
-        },
         "namespace": "tp",
         "nicName": "[concat(variables('namespace'), 'Nic')]",
         "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName')), '/subnets/',  parameters('newSubnetName'))]",
@@ -118,19 +113,6 @@
             },
             "kind": "Storage",
             "properties": {}
-        },
-        {
-            "type": "Microsoft.Compute/availabilitySets",
-            "name": "[variables('availabilitySetSettings').name]",
-            "apiVersion": "2017-03-30",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "platformFaultDomainCount": "[variables('availabilitySetSettings').fdCount]",
-                "platformUpdateDomainCount": "[variables('availabilitySetSettings').udCount]"
-            },
-            "sku": {
-                "name": "Aligned"
-            }
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
@@ -193,9 +175,6 @@
                 "count": "[variables('vmCount')]"
             },
             "properties": {
-                "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'iotauxas')]"
-                },
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
                 },
