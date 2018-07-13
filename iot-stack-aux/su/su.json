@@ -206,7 +206,7 @@
         {
             "name": "cluster",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2016-07-01",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -226,7 +226,7 @@
         {
             "name": "docDB",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2016-07-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
             ],
@@ -276,7 +276,7 @@
         {
             "name": "jumpboxWin",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2016-07-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', 'docDB')]"
             ],
