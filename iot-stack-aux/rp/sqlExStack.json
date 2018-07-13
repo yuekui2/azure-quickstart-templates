@@ -172,14 +172,12 @@
                             "description": "Allow external SQL Express access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "3389",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 140,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "3389",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
@@ -190,14 +188,12 @@
                             "description": "Allow external SQL Express access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "1433",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 141,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "1433",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
