@@ -6,7 +6,8 @@ $remotepath = "\\" + $computerName + "\" + $certsFolder
 net use $remotepath $pwd /USER:$username
 
 $remotefile =  $remotepath + "\DocDbSslCert.pfx"
-Import-PfxCertificate -CertStoreLocation cert:\LocalMachine\Root -FilePath $remotefile -Password $pwd
+$securepwd = ConvertTo-SecureString -String $pwd -Force -AsPlainText
+Import-PfxCertificate -CertStoreLocation cert:\LocalMachine\Root -FilePath $remotefile -Password $securepwd
 
 #$remotefile =  $remotepath + "\DocDbSslCert.pfx"
 #copy $remotefile
