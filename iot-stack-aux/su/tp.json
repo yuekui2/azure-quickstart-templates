@@ -184,7 +184,7 @@
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "vhd": {
-                            "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/osdisk.vhd')]"
+                            "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/', variables('vms')[copyindex()], '-osdisk.vhd')]"
                         }
                     },
                     "dataDisks": [
@@ -194,7 +194,7 @@
                             "createOption": "Empty",
                             "caching": "ReadWrite",
                             "vhd": {
-                                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/datadisk1.vhd')]"
+                                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/', variables('vms')[copyindex()], '-datadisk1.vhd')]"
                             },
                             "diskSizeGB": 1023
                         }

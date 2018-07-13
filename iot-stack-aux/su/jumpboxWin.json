@@ -117,22 +117,17 @@
             "properties": {
                 "securityRules": [
                     {
-                        "name": "[concat(variables('nsgName'), 'SqlExSecurityRule')]",
+                        "name": "[concat(variables('nsgName'), 'JumpboxRule')]",
                         "properties": {
-                            "description": "Allow external SQL Express access",
+                            "description": "Allow RDP",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "3389",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 140,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "3389",
-                                "1433"
-                            ],
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
