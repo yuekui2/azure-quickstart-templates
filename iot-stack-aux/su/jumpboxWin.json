@@ -91,7 +91,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "name": "[concat(parameters('existingVnetName'), '/', parameters('newSubnetName'))]",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
                 "addressPrefix": "[parameters('newSubnetAddressPrefix')]"
@@ -100,7 +100,7 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('publicIpName')]",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
                 "publicIPAllocationMethod": "Static",
@@ -112,7 +112,7 @@
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[variables('nsgName')]",
-            "apiVersion": "2018-02-01",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
                 "securityRules": [
@@ -143,7 +143,7 @@
         {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[variables('nicName')]",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
@@ -170,7 +170,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmName'))]",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
