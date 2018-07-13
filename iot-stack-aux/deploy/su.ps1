@@ -1,6 +1,6 @@
 Connect-AzureRmAccount
 
-$index = 1
+$index = 4
 $rgName = "iotrprg" + $index
 $deploymentName = "iotrpdeploy" +  $index
 $vnetName = "stackvnet" + $index
@@ -9,7 +9,8 @@ $adminUsername="azureuser"
 $PlainPassword = "IotStackAux@1"
 $pwd = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
 $templateBaseUrl = "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/"
-$storageAccountName = "stackauxsab" + $index
+$docDbStorageAccountName = "docdbsa" + $index
+$jumpBoxStorageAccountName = "jumpbox" + $index
 $tpStorageAccountName = "tpsa" + $index
 $vmNamePrefix = "auxvm" + $index
 
@@ -23,6 +24,7 @@ $jumpBoxVmName = "jumpboxvm" + $index
 $docDbVmName = "docDbVm" + $index
 $tpNewSubnetName = "tpsubnet" + $index
 
+
 New-AzureRmResourceGroupDeployment `
     -Name $deploymentName `
     -ResourceGroupName $rgName `
@@ -32,7 +34,6 @@ New-AzureRmResourceGroupDeployment `
     -vnetAddrPrefix $vnetAddrPrefix `
     -adminUsername $adminUsername `
     -adminPassword $pwd `
-    -storageAccountName $storageAccountName `
     -storageEndpointSuffix "core.windows.net" `
     -templateBaseUrl $templateBaseUrl `
     -jumpBoxNewSubnetName $jumpBoxNewSubnetName `
@@ -40,18 +41,20 @@ New-AzureRmResourceGroupDeployment `
     -jumpBoxVmName $jumpBoxVmName `
     -jumpBoxNamespace $jumpBoxNamespace `
     -jumpBoxDnsName $jumpBoxDnsName `
+    -jumpBoxStorageAccountName $jumpBoxStorageAccountName `
     -docDbNewSubnetAddressPrefix "10.0.2.0/24" `
     -docDbNewVmPrivateIpAddress "10.0.2.10" `
     -docDbVmName $docDbVmName `
     -docDbVmSize "Standard_A3" `
-    -docDBWindowsOSVersion "2016-Datacenter" `
+    -docDbStorageAccountName $docDbStorageAccountName `
+    -docDbWindowsOSVersion "2016-Datacenter" `
     -tpNewSubnetName $tpNewSubnetName `
     -tpNewSubnetAddressPrefix "10.0.7.0/24" `
     -tpVmSize "Standard_A3" `
     -tpVmNames "tp1,tp2,tp3" `
     -tpVmIPs "10.0.7.11,10.0.7.12,10.0.7.13" `
-    -tpStorageAccountName $tpStorageAccountName `
     -tpTshirtSize "Test" `
+    -tpStorageAccountName $tpStorageAccountName `
     -mongoReplicaSetName "rs0" `
     -mongoReplicaSetKey "mongorskey" `
     -kafkaPartitions 16
