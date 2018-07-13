@@ -1,6 +1,6 @@
 Connect-AzureRmAccount
 
-$index = 5
+$index = 8
 $rgName = "iotrprg" + $index
 $deploymentName = "iotrpdeploy" +  $index
 $vnetName = "stackvnet" + $index
@@ -10,6 +10,7 @@ $PlainPassword = "IotStackAux@1"
 $pwd = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
 $templateBaseUrl = "https://raw.githubusercontent.com/yuekui2/azure-quickstart-templates/master/"
 $storageAccountName = "stackauxsab" + $index
+$tpStorageAccountName = "tpsa" + $index
 $vmNamePrefix = "auxvm" + $index
 
 New-AzureRmResourceGroup -Name $rgName -Location "eastus"
@@ -45,13 +46,15 @@ New-AzureRmResourceGroupDeployment `
     -tpNewSubnetName "tpsubnet" `
     -tpNewSubnetAddressPrefix "10.0.7.0/24" `
     -tpVmSize "Standard_A3" `
-    -tpVmNames "tp0,tp3" `
-    -tpVmIPs "10.0.7.10,10.0.7.13" `
+    -tpVmNames "tp1,tp2,tp3" `
+    -tpVmIPs "10.0.7.11,10.0.7.12,10.0.7.13" `
+    -tpStorageAccountName $tpStorageAccountName `
     -tpTshirtSize "Test" `
     -mongoReplicaSetName "rs0" `
     -mongoReplicaSetKey "mongorskey" `
     -kafkaPartitions 16
 
+    Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName jumpboxvm –Name scripts -Force
 
 New-AzureRmResourceGroupDeployment `
 -Name $deploymentName `
@@ -61,7 +64,7 @@ New-AzureRmResourceGroupDeployment `
 -vnetName $vnetName `
 -vnetAddrPrefix $vnetAddrPrefix
 
-    Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rgName -VMName jumpboxvm –Name scripts -Force
+
 
     New-AzureRmResourceGroupDeployment `
     -Name $deploymentName `
@@ -110,5 +113,5 @@ New-AzureRmResourceGroupDeployment `
     -adminPassword $pwd `
     -storageAccountName $storageAccountName `
     -templateBaseUrl $templateBaseUrl `
-    -vmNames "tp0,tp3" `
-    -vmIPs "10.0.7.10,10.0.7.13"
+    -vmNames "tp1,tp2,tp3" `
+    -vmIPs "10.0.7.11,10.0.7.12,10.0.7.13"

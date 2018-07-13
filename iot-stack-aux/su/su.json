@@ -163,6 +163,12 @@
                 "description": "Third party comma-delimited virtual machine private IP addresses"
             }
         },
+        "tpStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Third party unique name of the new storage account"
+            }
+        },
         "tpTshirtSize": {
             "type": "string",
             "defaultValue": "Test",
@@ -347,7 +353,7 @@
                         "value": "[parameters('tpNewSubnetAddressPrefix')]"
                     },
                     "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
+                        "value": "[parameters('tpStorageAccountName')]"
                     },
                     "vmNames": {
                         "value": "[parameters('tpVmNames')]"
