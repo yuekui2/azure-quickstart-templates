@@ -1,6 +1,6 @@
 Connect-AzureRmAccount
 
-$index = 8
+$index = 1
 $rgName = "iotrprg" + $index
 $deploymentName = "iotrpdeploy" +  $index
 $vnetName = "stackvnet" + $index
@@ -19,7 +19,9 @@ $jumpBoxNewSubnetName = "jumpboxwsubnet" + $index
 $jumpBoxNamespace = "jumpboxw"  + $index
 $jumpBoxDnsName = "jumpboxwdns" + $index
 $vmNamePrefix = "auxvmw" + $index
-
+$jumpBoxVmName = "jumpboxvm" + $index
+$docDbVmName = "docDbVm" + $index
+$tpNewSubnetName = "tpsubnet" + $index
 
 New-AzureRmResourceGroupDeployment `
     -Name $deploymentName `
@@ -35,15 +37,15 @@ New-AzureRmResourceGroupDeployment `
     -templateBaseUrl $templateBaseUrl `
     -jumpBoxNewSubnetName $jumpBoxNewSubnetName `
     -jumpBoxNewSubnetAddressPrefix 10.0.6.0/24 `
-    -jumpBoxVmName "jumpboxvm" `
+    -jumpBoxVmName $jumpBoxVmName `
     -jumpBoxNamespace $jumpBoxNamespace `
     -jumpBoxDnsName $jumpBoxDnsName `
     -docDbNewSubnetAddressPrefix "10.0.2.0/24" `
     -docDbNewVmPrivateIpAddress "10.0.2.10" `
-    -docDbVmName "docDbVm" `
+    -docDbVmName $docDbVmName `
     -docDbVmSize "Standard_A3" `
     -docDBWindowsOSVersion "2016-Datacenter" `
-    -tpNewSubnetName "tpsubnet" `
+    -tpNewSubnetName $tpNewSubnetName `
     -tpNewSubnetAddressPrefix "10.0.7.0/24" `
     -tpVmSize "Standard_A3" `
     -tpVmNames "tp1,tp2,tp3" `
