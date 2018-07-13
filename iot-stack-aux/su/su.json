@@ -16,12 +16,7 @@
                 "description": "Virtual network address prefix"
             }
         },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique name of the new storage account"
-            }
-        },
+
         "adminUsername": {
             "type": "string",
             "defaultValue": "azureuser",
@@ -83,6 +78,12 @@
                 "description": "Jumpbox DNS label prefix"
             }
         },
+        "jumpBoxStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Jump box unique name of the new storage account"
+            }
+        },
         "docDbNewSubnetAddressPrefix": {
             "type": "string",
             "defaultValue": "10.0.2.0/24",
@@ -117,11 +118,17 @@
                 "description": "Document DB virtual machine size"
             }
         },
-        "docDBWindowsOSVersion": {
+        "docDbWindowsOSVersion": {
             "type": "string",
             "defaultValue": "2016-Datacenter",
             "metadata": {
                 "description": "Document DB Windows version for VM"
+            }
+        },
+        "docDbStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Document DB unique name of the new storage account"
             }
         },
         "tpNewSubnetName": {
@@ -268,7 +275,7 @@
                         "value": "[parameters('docDbWindowsOSVersion')]"
                     },
                     "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
+                        "value": "[parameters('docDbStorageAccountName')]"
                     },
                     "storageEndpointSuffix": {
                         "value": "[parameters('storageEndpointSuffix')]"
@@ -303,7 +310,7 @@
                         "value": "[parameters('jumpBoxNewSubnetAddressPrefix')]"
                     },
                     "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
+                        "value": "[parameters('jumpBoxStorageAccountName')]"
                     },
                     "vmName": {
                         "value": "[parameters('jumpBoxVmName')]"
@@ -316,9 +323,6 @@
                     },
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
-                    },
-                    "namespace": {
-                        "value": "[parameters('jumpBoxNamespace')]"
                     },
                     "dnsName": {
                         "value": "[parameters('jumpBoxDnsName')]"
@@ -334,7 +338,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-07-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
+                "[resourceId('Microsoft.Resources/deployments', 'jumpboxWin')]"
             ],
             "properties": {
                 "mode": "Incremental",
