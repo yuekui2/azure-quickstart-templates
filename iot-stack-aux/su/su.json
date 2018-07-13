@@ -199,7 +199,8 @@
     "variables": {
         "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vnet/vnet.json')]",
         "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/jumpboxWin.json')]",
-        "docDbTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/docDb.json')]"
+        "docDbTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/docDb.json')]",
+        "thirdPartyTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/tp.json')]"
     },
     "resources": [
         {
@@ -315,6 +316,53 @@
                     },
                     "dnsName": {
                         "value": "[parameters('jumpBoxDnsName')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "thirdparty",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('thirdPartyTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[reference('cluster').outputs.vnetName.value]"
+                    },
+                    "newSubnetName": {
+                        "value": "[parameters('tpNewSubnetName')]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('tpNewSubnetAddressPrefix')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
+                    },
+                    "vmNames": {
+                        "value": "[parameters('tpVmNames')]"
+                    },
+                    "vmIPs": {
+                        "value": "[parameters('tpVmIPs')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('tpVmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
                     },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
