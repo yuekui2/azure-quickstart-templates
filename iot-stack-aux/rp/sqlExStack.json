@@ -30,10 +30,7 @@
         },
         "vmSize": {
             "type": "string",
-            "defaultValue": "Standard_D4",
-            "allowedValues": [
-                "Standard_D4"
-            ],
+            "defaultValue": "Standard_D2",
             "metadata": {
                 "description": "Virtual machine size"
             }
