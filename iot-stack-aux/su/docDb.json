@@ -33,12 +33,6 @@
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_A1",
-            "allowedValues": [
-                "Standard_A1",
-                "Standard_A3",
-                "Standard_A4",
-                "Standard_A7"
-            ],
             "metadata": {
                 "description": "Virtual machine size"
             }
@@ -118,14 +112,12 @@
                             "description": "Allow external document DB access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "10251",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 140,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10251",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
@@ -136,14 +128,12 @@
                             "description": "Allow external document DB access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "10252",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 141,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10252",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
@@ -154,14 +144,12 @@
                             "description": "Allow external document DB access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "10253",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 142,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10253",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
@@ -172,14 +160,12 @@
                             "description": "Allow external document DB access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "10254",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 143,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "10254",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
@@ -190,14 +176,12 @@
                             "description": "Allow external document DB access",
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "",
+                            "destinationPortRange": "8081",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 144,
                             "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRange": "8081",
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
