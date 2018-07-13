@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string",
+            "defaultValue": "auxvm",
+            "metadata": {
+                "description": "Virtual machine name"
+            }
+        },
+        "docDbVmName": {
+            "type": "string",
+            "defaultValue": "docDbVm",
+            "metadata": {
+                "description": "Document DB virtual machine name"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "azureuser",
+            "metadata": {
+                "description": "Virtual machine admin username"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Virtual machine admin password"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        }
+    },
+    "variables": {
+        "scripts": [
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/jumpboxWin.ps1')]"
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmName'), '/scripts')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.9",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('scripts')]",
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file jumpboxWin.ps1 -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -c ', parameters('docDbVmName'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

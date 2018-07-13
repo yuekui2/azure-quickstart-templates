@@ -56,13 +56,6 @@
                 "description": "Virtual machine admin password"
             }
         },
-        "namespace": {
-            "type": "string",
-            "defaultValue": "aux",
-            "metadata": {
-                "description": "Namespace for NIC etc"
-            }
-        },
         "dnsName": {
             "type": "string",
             "defaultValue": "jumpboxdns",
@@ -78,13 +71,9 @@
         }
     },
     "variables": {
-        "availabilitySetSettings": {
-            "name": "iotauxas",
-            "fdCount": 3,
-            "udCount": 5
-        },
-        "nsgName": "[concat(parameters('namespace'), 'Nsg')]",
-        "nicName": "[concat(parameters('namespace'), 'nic')]",
+        "namespace": "jumpboxw",
+        "nsgName": "[concat(variables('namespace'), 'Nsg')]",
+        "nicName": "[concat(variables('namespace'), 'Nic')]",
         "subnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName')), '/subnets/',  parameters('newSubnetName'))]",
         "imageReference": {
             "publisher": "MicrosoftWindowsServer",
@@ -96,7 +85,7 @@
         "scripts": [
             "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/jumpboxWin.ps1')]"
         ],
-        "publicIpName": "[concat(parameters('namespace'), 'publicIp')]"
+        "publicIpName": "[concat(variables('namespace'), 'PublicIp')]"
     },
     "resources": [
         {

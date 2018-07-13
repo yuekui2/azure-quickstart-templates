@@ -4,7 +4,7 @@
     "parameters": {
         "vnetName": {
             "type": "string",
-            "defaultValue": "stackvnet",
+            "defaultValue": "stackscvnet",
             "metadata": {
                 "description": "Virtual network name"
             }
@@ -16,31 +16,10 @@
                 "description": "Virtual network address prefix"
             }
         },
-        "jumpBoxNewSubnetName": {
-            "type": "string",
-            "defaultValue": "auxsubset",
-            "metadata": {
-                "description": "New subnet name"
-            }
-        },
-        "jumpBoxNewSubnetAddressPrefix": {
-            "type": "string",
-            "defaultValue": "10.0.1.0/24",
-            "metadata": {
-                "description": "New subnet address prefix"
-            }
-        },
         "storageAccountName": {
             "type": "string",
             "metadata": {
                 "description": "Unique name of the new storage account"
-            }
-        },
-        "jumpBoxVmName": {
-            "type": "string",
-            "defaultValue": "auxvm",
-            "metadata": {
-                "description": "Virtual machine name"
             }
         },
         "adminUsername": {
@@ -56,18 +35,52 @@
                 "description": "Virtual machine admin password"
             }
         },
+        "storageEndpointSuffix": {
+            "defaultValue": "core.windows.net",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage endpoint suffix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        },
+        "jumpBoxNewSubnetName": {
+            "type": "string",
+            "defaultValue": "jumpboxsubnet",
+            "metadata": {
+                "description": "Jumpbox new subnet name"
+            }
+        },
+        "jumpBoxNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "Jumpbox new subnet address prefix"
+            }
+        },
+        "jumpBoxVmName": {
+            "type": "string",
+            "defaultValue": "jumpboxvm",
+            "metadata": {
+                "description": "Jumpbox virtual machine name"
+            }
+        },
         "jumpBoxNamespace": {
             "type": "string",
             "defaultValue": "aux",
             "metadata": {
-                "description": "Namespace for NIC etc"
+                "description": "Jumpbox namespace for NIC etc"
             }
         },
         "jumpBoxDnsName": {
             "type": "string",
             "defaultValue": "jumpboxdns",
             "metadata": {
-                "description": "DNS label prefix"
+                "description": "Jumpbox DNS label prefix"
             }
         },
         "docDbNewSubnetAddressPrefix": {
@@ -111,17 +124,75 @@
                 "description": "Document DB Windows version for VM"
             }
         },
-        "storageEndpointSuffix": {
-            "defaultValue": "core.windows.net",
+        "tpNewSubnetName": {
             "type": "string",
+            "defaultValue": "tpsubset",
             "metadata": {
-                "description": "VM storage endpoint suffix"
+                "description": "Third party new subnet name"
             }
         },
-        "templateBaseUrl": {
+        "tpNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.3.0/24",
+            "metadata": {
+                "description": "Third party new subnet address prefix"
+            }
+        },
+        "tpVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_A1",
+            "allowedValues": [
+                "Standard_A1",
+                "Standard_A3",
+                "Standard_A4",
+                "Standard_A7"
+            ],
+            "metadata": {
+                "description": "Third party virtual machine size"
+            }
+        },
+        "tpVmNames": {
             "type": "string",
             "metadata": {
-                "description": "ARM template base URL"
+                "description": "Third party comma-delimited virtual machine names"
+            }
+        },
+        "tpVmIPs": {
+            "type": "string",
+            "metadata": {
+                "description": "Third party comma-delimited virtual machine private IP addresses"
+            }
+        },
+        "tpTshirtSize": {
+            "type": "string",
+            "defaultValue": "Test",
+            "allowedValues": [
+                "Test",
+                "ProdStandard",
+                "ProdLarge"
+            ],
+            "metadata": {
+                "description": "Third party t-shirt size"
+            }
+        },
+        "mongoReplicaSetName": {
+            "type": "string",
+            "defaultValue": "rs0",
+            "metadata": {
+                "description": "MongoDB replica set name"
+            }
+        },
+        "mongoReplicaSetKey": {
+            "type": "string",
+            "metadata": {
+                "description": "MongoDB replica set secret key"
+            }
+        },
+        "kafkaPartitions": {
+            "type": "int",
+            "defaultValue": 16,
+            "metadata": {
+                "description": "Kafka default number of Partitions"
             }
         }
     },
