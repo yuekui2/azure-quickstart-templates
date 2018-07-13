@@ -239,7 +239,7 @@
                 "storageProfile": {
                     "imageReference": {
                         "publisher": "MicrosoftSQLServer",
-                        "offer": "SQL2016SP1-WS2016",
+                        "offer": "SQL2016SP2-WS2016",
                         "sku": "Express",
                         "version": "latest"
                     },
