@@ -32,7 +32,6 @@
             "type": "string",
             "defaultValue": "Standard_D4",
             "allowedValues": [
-                "Standard_D2",
                 "Standard_D4"
             ],
             "metadata": {
