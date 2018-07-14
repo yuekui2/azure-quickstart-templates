@@ -79,13 +79,37 @@
             "version": "latest"
         },
         "diskSize": 1023,
-        "scripts": [
-            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vm/vm.sh')]",
-            "[concat(parameters('templateBaseUrl'), 'shared_scripts/ubuntu/vm-disk-utils-0.1.sh')]"
-        ],
         "vms": "[split(parameters('vmNames'), ',')]",
         "privateIps": "[split(parameters('vmIPs'), ',')]",
-        "vmCount": "[length(variables('vms'))]"
+        "vmCount": "[length(variables('vms'))]",
+        "tshirtSizeTest": {
+            "zkVmIndexes": "0",
+            "kafkaVmIndexes": "0",
+            "redisVmIndexes": "0",
+            "mongoVmIndexes": "0"
+        },
+        "tshirtSizeProdStandard": {
+            "zkVmIndexes": "0,1,2",
+            "kafkaVmIndexes": "0,1,2",
+            "redisVmIndexes": "0,1,2",
+            "mongoVmIndexes": "0,1,2"
+        },
+        "tshirtSizeProdLarge": {
+            "zkVmIndexes": "0,1,2",
+            "kafkaVmIndexes": "3,4,5",
+            "redisVmIndexes": "0,1,2",
+            "mongoVmIndexes": "0,1,2"
+        },
+        "tshirtSize": "[variables(concat('tshirtSize', parameters('tshirtSize')))]",
+        "scripts": [
+            "[concat(parameters('templateBaseUrl'), 'shared_scripts/ubuntu/vm-disk-utils-0.1.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/entry.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/zookeeper.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/kafka.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/redis-sentinel.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/redis-sentinel-startup.sh')]",
+            "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/mongodb-ubuntu-install.sh')]"
+        ]
     },
     "resources": [
         {
@@ -211,7 +235,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vms')[copyindex()], '/mountdisk')]",
+            "name": "[concat(variables('vms')[copyindex()], '/scripts')]",
             "apiVersion": "2017-12-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -228,7 +252,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('scripts')]",
-                    "commandToExecute": "bash vm.sh vm-disk-utils-0.1.sh"
+                    "commandToExecute": "[concat('bash entry.sh -i ',copyindex(),' -n ', parameters('vmNames'),' -a ', parameters('vmIPs'), ' -z ', variables('tshirtSize').zkVmIndexes, ' -k ', variables('tshirtSize').kafkaVmIndexes, ' -r ', variables('tshirtSize').redisVmIndexes, ' -m ', variables('tshirtSize').mongoVmIndexes, ' -t ', parameters('replicaSetName'), ' -y ', parameters('replicaSetKey'), ' -u ', parameters('adminUsername'), ' -p ', parameters('adminPassword'), ' -x ', parameters('kafkaPartitions'))]"
                 }
             }
         }
