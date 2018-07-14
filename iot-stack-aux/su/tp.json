@@ -194,7 +194,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[variables('vms')[copyindex()]]",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
@@ -248,7 +248,7 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('vms')[copyindex()], '/scripts')]",
-            "apiVersion": "2017-12-01",
+            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vms')[copyindex()])]"
