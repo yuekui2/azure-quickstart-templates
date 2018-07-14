@@ -192,33 +192,13 @@
             }
         },
         {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vms')[copyindex()], '-datadisk1')]",
-            "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "copy": {
-                "name": "dataDiskCopyLoop",
-                "count": "[variables('vmCount')]"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": "[variables('diskSize')]"
-            }
-        },
-        {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[variables('vms')[copyindex()]]",
             "apiVersion": "2017-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]",
-                "[concat('Microsoft.Compute/disks/', variables('vms')[copyindex()], '-datadisk1')]"
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex())]"
             ],
             "copy": {
                 "name": "vmCopyLoop",
@@ -252,7 +232,7 @@
                             "vhd": {
                                 "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/', variables('vms')[copyindex()], '-datadisk1.vhd')]"
                             },
-                            "diskSizeGB": 1023
+                            "diskSizeGB": "[variables('diskSize')]"
                         }
                     ]
                 },
