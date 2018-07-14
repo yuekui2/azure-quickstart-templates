@@ -78,6 +78,26 @@
             "metadata": {
                 "description": "ARM template base URL"
             }
+        },
+        "replicaSetName": {
+            "type": "string",
+            "defaultValue": "rs0",
+            "metadata": {
+                "description": "The name of the MongoDB replica set"
+            }
+        },
+        "replicaSetKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The shared secret key for the MongoDB replica set"
+            }
+        },
+        "kafkaPartitions": {
+            "type": "int",
+            "defaultValue": 16,
+            "metadata": {
+                "description": "Kafka default number of Partitions"
+            }
         }
     },
     "variables": {
