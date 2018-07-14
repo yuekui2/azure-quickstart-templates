@@ -48,6 +48,18 @@
                 "description": "Virtual machine size"
             }
         },
+        "tshirtSize": {
+            "type": "string",
+            "defaultValue": "Test",
+            "allowedValues": [
+                "Test",
+                "ProdStandard",
+                "ProdLarge"
+            ],
+            "metadata": {
+                "description": "T-shirt size of the IoT hub"
+            }
+        },
         "adminUsername": {
             "type": "string",
             "defaultValue": "azureuser",
