@@ -16,7 +16,6 @@
                 "description": "Virtual network address prefix"
             }
         },
-
         "adminUsername": {
             "type": "string",
             "defaultValue": "azureuser",
@@ -107,12 +106,10 @@
         },
         "docDbVmSize": {
             "type": "string",
-            "defaultValue": "Standard_A1",
+            "defaultValue": "Standard_D2",
             "allowedValues": [
-                "Standard_A1",
-                "Standard_A3",
-                "Standard_A4",
-                "Standard_A7"
+                "Standard_D2",
+                "Standard_D4"
             ],
             "metadata": {
                 "description": "Document DB virtual machine size"
@@ -147,12 +144,10 @@
         },
         "tpVmSize": {
             "type": "string",
-            "defaultValue": "Standard_A1",
+            "defaultValue": "Standard_D2",
             "allowedValues": [
-                "Standard_A1",
-                "Standard_A3",
-                "Standard_A4",
-                "Standard_A7"
+                "Standard_D2",
+                "Standard_D4"
             ],
             "metadata": {
                 "description": "Third party virtual machine size"
@@ -287,58 +282,11 @@
             }
         },
         {
-            "name": "jumpboxWin",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-07-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'docDB')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('jumpboxWinTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "existingVnetName": {
-                        "value": "[reference('cluster').outputs.vnetName.value]"
-                    },
-                    "newSubnetName": {
-                        "value": "[parameters('jumpBoxNewSubnetName')]"
-                    },
-                    "newSubnetAddressPrefix": {
-                        "value": "[parameters('jumpBoxNewSubnetAddressPrefix')]"
-                    },
-                    "storageAccountName": {
-                        "value": "[parameters('jumpBoxStorageAccountName')]"
-                    },
-                    "vmName": {
-                        "value": "[parameters('jumpBoxVmName')]"
-                    },
-                    "docDbVmName": {
-                        "value": "[parameters('docDbVmName')]"
-                    },
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPassword": {
-                        "value": "[parameters('adminPassword')]"
-                    },
-                    "dnsName": {
-                        "value": "[parameters('jumpBoxDnsName')]"
-                    },
-                    "templateBaseUrl": {
-                        "value": "[parameters('templateBaseUrl')]"
-                    }
-                }
-            }
-        },
-        {
             "name": "thirdparty",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-07-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'jumpboxWin')]"
+                "[resourceId('Microsoft.Resources/deployments', 'docDB')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -348,7 +296,7 @@
                 },
                 "parameters": {
                     "existingVnetName": {
-                        "value": "[reference('cluster').outputs.vnetName.value]"
+                        "value": "[parameters('vnetName')]"
                     },
                     "newSubnetName": {
                         "value": "[parameters('tpNewSubnetName')]"
@@ -368,6 +316,9 @@
                     "vmSize": {
                         "value": "[parameters('tpVmSize')]"
                     },
+                    "tshirtSize": {
+                        "value": "[parameters('tpTshirtSize')]"
+                    },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
                     },
@@ -376,6 +327,15 @@
                     },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "replicaSetName": {
+                        "value": "[parameters('mongoReplicaSetName')]"
+                    },
+                    "replicaSetKey": {
+                        "value": "[parameters('mongoReplicaSetKey')]"
+                    },
+                    "kafkaPartitions": {
+                        "value": "[parameters('kafkaPartitions')]"
                     }
                 }
             }
