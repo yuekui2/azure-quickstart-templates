@@ -1,0 +1,392 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "stackscvnet",
+            "metadata": {
+                "description": "Virtual network name"
+            }
+        },
+        "vnetAddrPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "Virtual network address prefix"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "azureuser",
+            "metadata": {
+                "description": "Virtual machine admin username"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Virtual machine admin password"
+            }
+        },
+        "storageEndpointSuffix": {
+            "defaultValue": "core.windows.net",
+            "type": "string",
+            "metadata": {
+                "description": "VM storage endpoint suffix"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "ARM template base URL"
+            }
+        },
+        "jumpBoxNewSubnetName": {
+            "type": "string",
+            "defaultValue": "jumpboxsubnet",
+            "metadata": {
+                "description": "Jumpbox new subnet name"
+            }
+        },
+        "jumpBoxNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "Jumpbox new subnet address prefix"
+            }
+        },
+        "jumpBoxVmName": {
+            "type": "string",
+            "defaultValue": "jumpboxvm",
+            "metadata": {
+                "description": "Jumpbox virtual machine name"
+            }
+        },
+        "jumpBoxNamespace": {
+            "type": "string",
+            "defaultValue": "aux",
+            "metadata": {
+                "description": "Jumpbox namespace for NIC etc"
+            }
+        },
+        "jumpBoxDnsName": {
+            "type": "string",
+            "defaultValue": "jumpboxdns",
+            "metadata": {
+                "description": "Jumpbox DNS label prefix"
+            }
+        },
+        "jumpBoxStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Jump box unique name of the new storage account"
+            }
+        },
+        "docDbNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.2.0/24",
+            "metadata": {
+                "description": "Document DB new subnet address prefix"
+            }
+        },
+        "docDbNewVmPrivateIpAddress": {
+            "type": "string",
+            "defaultValue": "10.0.2.10",
+            "metadata": {
+                "description": "Document DB new virtual machine private IP address"
+            }
+        },
+        "docDbVmName": {
+            "type": "string",
+            "defaultValue": "docDbVm",
+            "metadata": {
+                "description": "Document DB virtual machine name"
+            }
+        },
+        "docDbVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D2",
+            "allowedValues": [
+                "Standard_D2",
+                "Standard_D4"
+            ],
+            "metadata": {
+                "description": "Document DB virtual machine size"
+            }
+        },
+        "docDbWindowsOSVersion": {
+            "type": "string",
+            "defaultValue": "2016-Datacenter",
+            "metadata": {
+                "description": "Document DB Windows version for VM"
+            }
+        },
+        "docDbStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Document DB unique name of the new storage account"
+            }
+        },
+        "tpNewSubnetName": {
+            "type": "string",
+            "defaultValue": "tpsubset",
+            "metadata": {
+                "description": "Third party new subnet name"
+            }
+        },
+        "tpNewSubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.3.0/24",
+            "metadata": {
+                "description": "Third party new subnet address prefix"
+            }
+        },
+        "tpVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D2",
+            "allowedValues": [
+                "Standard_D2",
+                "Standard_D4"
+            ],
+            "metadata": {
+                "description": "Third party virtual machine size"
+            }
+        },
+        "tpVmNames": {
+            "type": "string",
+            "metadata": {
+                "description": "Third party comma-delimited virtual machine names"
+            }
+        },
+        "tpVmIPs": {
+            "type": "string",
+            "metadata": {
+                "description": "Third party comma-delimited virtual machine private IP addresses"
+            }
+        },
+        "tpStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Third party unique name of the new storage account"
+            }
+        },
+        "tpTshirtSize": {
+            "type": "string",
+            "defaultValue": "Test",
+            "allowedValues": [
+                "Test",
+                "ProdStandard",
+                "ProdLarge"
+            ],
+            "metadata": {
+                "description": "Third party t-shirt size"
+            }
+        },
+        "mongoReplicaSetName": {
+            "type": "string",
+            "defaultValue": "rs0",
+            "metadata": {
+                "description": "MongoDB replica set name"
+            }
+        },
+        "mongoReplicaSetKey": {
+            "type": "string",
+            "metadata": {
+                "description": "MongoDB replica set secret key"
+            }
+        },
+        "kafkaPartitions": {
+            "type": "int",
+            "defaultValue": 16,
+            "metadata": {
+                "description": "Kafka default number of Partitions"
+            }
+        }
+    },
+    "variables": {
+        "clusterTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/shared/vnet/vnet.json')]",
+        "jumpboxWinTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/jumpboxWin.json')]",
+        "docDbTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/docDb.json')]",
+        "thirdPartyTemplateUrl": "[concat(parameters('templateBaseUrl'), 'iot-stack-aux/su/tp.json')]"
+    },
+    "resources": [
+        {
+            "name": "cluster",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('clusterTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
+                    },
+                    "vnetAddrPrefix": {
+                        "value": "[parameters('vnetAddrPrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "docDB",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'cluster')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('docDbTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[reference('cluster').outputs.vnetName.value]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('docDbNewSubnetAddressPrefix')]"
+                    },
+                    "newVmPrivateIpAddress": {
+                        "value": "[parameters('docDbNewVmPrivateIpAddress')]"
+                    },
+                    "vmName": {
+                        "value": "[parameters('docDbVmName')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('docDbVmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "windowsOSVersion": {
+                        "value": "[parameters('docDbWindowsOSVersion')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('docDbStorageAccountName')]"
+                    },
+                    "storageEndpointSuffix": {
+                        "value": "[parameters('storageEndpointSuffix')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "jumpboxWin",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'docDB')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('jumpboxWinTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[reference('cluster').outputs.vnetName.value]"
+                    },
+                    "newSubnetName": {
+                        "value": "[parameters('jumpBoxNewSubnetName')]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('jumpBoxNewSubnetAddressPrefix')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('jumpBoxStorageAccountName')]"
+                    },
+                    "vmName": {
+                        "value": "[parameters('jumpBoxVmName')]"
+                    },
+                    "docDbVmName": {
+                        "value": "[parameters('docDbVmName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "dnsName": {
+                        "value": "[parameters('jumpBoxDnsName')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "thirdparty",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'jumpboxWin')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('thirdPartyTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "existingVnetName": {
+                        "value": "[parameters('vnetName')]"
+                    },
+                    "newSubnetName": {
+                        "value": "[parameters('tpNewSubnetName')]"
+                    },
+                    "newSubnetAddressPrefix": {
+                        "value": "[parameters('tpNewSubnetAddressPrefix')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('tpStorageAccountName')]"
+                    },
+                    "vmNames": {
+                        "value": "[parameters('tpVmNames')]"
+                    },
+                    "vmIPs": {
+                        "value": "[parameters('tpVmIPs')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('tpVmSize')]"
+                    },
+                    "tshirtSize": {
+                        "value": "[parameters('tpTshirtSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "replicaSetName": {
+                        "value": "[parameters('mongoReplicaSetName')]"
+                    },
+                    "replicaSetKey": {
+                        "value": "[parameters('mongoReplicaSetKey')]"
+                    },
+                    "kafkaPartitions": {
+                        "value": "[parameters('kafkaPartitions')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
